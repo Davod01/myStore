@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use Faker\Factory as faker;
 
 class ProductsTableSeeder extends Seeder
 {
@@ -12,48 +13,24 @@ class ProductsTableSeeder extends Seeder
     public function run()
     {
         DB::table('products')->truncate();
-        $products = [
-            [
-                    'name' => "MEN'S BETTER THAN NAKED & JACKET",
-                    'description' => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                    tempor incididunt ut labore et dolore magna aliqua consequat.',
-                    'units' => 21,
-                    'price' => 200.10,
-                    'image' => 'p1',
-                    'created_at' => new DateTime,
-                    'updated_at' => null,
-                ],
-                [
-                    'name' => "WOMEN'S BETTER THAN NAKED™ JACKET",
-                    'description' => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                    tempor incididunt ut labore et dolore magna aliqua consequat.',
-                    'units' => 400,
-                    'price' => 1600.21,
-                    'image' => 'p2',
-                    'created_at' => new DateTime,
-                    'updated_at' => null,
-                ],
-                [
-                    'name' => "WOMEN'S SINGLE-TRACK SHOE",
-                    'description' => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                    tempor incididunt ut labore et dolore magna aliqua consequat.',
-                    'units' => 37,
-                    'price' => 378.00,
-                    'image' => 'p3',
-                    'created_at' => new DateTime,
-                    'updated_at' => null,
-                ],
-                [
-                    'name' => 'Enduro Boa® Hydration Pack',
-                    'description' => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                    tempor incididunt ut labore et dolore magna aliqua consequat.',
-                    'units' => 10,
-                    'price' => 21.10,
-                    'image' => 'p4',
-                    'created_at' => new DateTime,
-                    'updated_at' => null,
-                ]
-        ];
+        $products = [];
+        $faker = faker::create();
+        $cat = ['men','womens','child'];
+        $size = ['large','medium','small'];
+        for ($i = 0;$i < 200 ;$i++){
+            $products[] = [
+                'name' => $faker->text(rand(20,40)),
+                'description' => $faker->text(rand(500,2400)),
+                'units' => rand(0,100),
+                'category' => $cat[rand(0,2)],
+                'size' => $size[rand(0,2)],
+                'price' => rand(20,800) * 1000,
+                'image' => 'images/p'. rand(1,4),
+                'created_at' => new DateTime,
+                'updated_at' => null,
+            ];
+
+        }
         DB::table('products')->insert($products);
     }
 }
