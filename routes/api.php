@@ -37,3 +37,6 @@ use Illuminate\Http\Request;
 Route::get('/shop', 'homeController@shop');
 
 Route::get('/shop/{product}', 'homeController@getProduct');
+
+
+// Route::post('/shop/login/{user}', 'userController@login');

@@ -1,6 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from '../views/Home.vue'
+import Login from '../views/Login.vue'
+import Register from '../views/Register.vue'
+import access from '../views/access.vue'
 import Shop from '../views/Shop.vue'
 import singleProduct from '../views/singleProduct.vue'
 import AppHeader from '../components/navbar.vue'
@@ -39,6 +42,27 @@ export default new Router({
           {name: 'خانه /',link:'/'},
           {name: 'بخش خرید /',link:'/shop'}
         ]
+      }
+    },git status
+    {
+      path: "/acc",
+      name: "access",
+      components: {
+        default: access,
+      },
+    },
+    {
+      path: "/login",
+      name: "Login",
+      components: {
+        default: Login,
+      }
+    },
+    {
+      path: "/register",
+      name: "Register",
+      components: {
+        default: Register,
       }
     },
     {

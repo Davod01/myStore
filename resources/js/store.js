@@ -13,8 +13,18 @@ export default new Vuex.Store({
         id:value.id,
         name:value.name,
         price:value.price,
-        image:value.image
+        image:value.image,
+        number: 1
       });
+    }
+  },
+  getters: {
+    getOrderTotalPrice: state => {
+      let data = 0;
+      state.ordersList.forEach( x => {
+        data += x.number * x.price;
+      });
+      return data;
     }
   }
 });

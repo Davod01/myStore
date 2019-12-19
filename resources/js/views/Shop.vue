@@ -102,7 +102,7 @@ export default {
       ],
       per_page: 24,
       currentPage: 1,
-      sortedBy:''
+      sortedBy:'new'
     }
   },
   methods: {

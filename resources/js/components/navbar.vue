@@ -30,7 +30,21 @@
           <button><i class="fas fa-search"></i></button>
         </div>
         <div class="header-child">
-          <div class="user"><i class="fas fa-user"></i></div>
+            <div class="user">
+              <i class="fas fa-user"></i>
+              <div class="user-plate">
+                <ul>
+                  <router-link to="/login">
+                    <li>
+                      ورود
+                    </li>
+                  </router-link>
+                  <router-link to="/register">
+                    <li>ثبت نام</li>
+                  </router-link>
+                </ul>
+              </div>
+            </div>
           <div class="cart" @click="cumpCartModal = !cumpCartModal"><i class="fas fa-cart"></i></div>
         </div>
       </div>
@@ -166,12 +180,63 @@ export default {
     margin-right: -5px;
   }
 
-  .user{
+  .user {
+    position: relative;
     flex-grow: 1;
-    display: flex;
+    display: inline-block;
     justify-content: center;
   }
 
+  .user-plate {
+    display: none;
+    position: absolute;
+    width:100px;
+    height: 90px;
+    top: 46px;
+    left: 15px;
+    background: #fafafa;
+  }
+
+  .user:hover .user-plate {
+    display: flex;
+  }
+
+  .user-plate::before {
+    content: '';
+    position: absolute;
+    width: 100px;
+    height: 30px;
+    top: -30px;
+  }
+
+  .user-plate ul {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .user-plate ul li {
+    list-style: none;
+    padding: 10px 10px 10px 20px;
+    font-weight: 50;
+    position: relative;
+  }
+
+  .user-plate ul li::before {
+    content: '';
+    position: absolute;
+    right: 5px;
+    top:5px;
+    height: 30px;
+    width: 0px;
+    background-color: red;
+    transition: all 0.5s;
+    z-index: 1;
+    opacity: 0.5;
+  }
+
+  .user-plate ul li:hover::before {
+    width: 90px;
+  }
   .logo{
     margin:0 2rem 0 2rem;
   }

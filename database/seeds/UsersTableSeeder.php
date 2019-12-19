@@ -12,14 +12,25 @@ class UsersTableSeeder extends Seeder
     public function run()
     {
         DB::table('users')->truncate();
-        $user = [
+        $user = [[
             'name'=>'Admin',
             'email'=>'admin@devtest.com',
             'password'=>bcrypt('secret'),
             'is_admin'=>true,
             'created_at'=>new DateTime,
             'updated_at'=>new DateTime
-        ];
+            ],
+            [
+                'name'=>'Davod',
+                'email'=>'davod@devtest.com',
+                'password'=>bcrypt('secret'),
+                'is_admin'=>false,
+                'created_at'=>new DateTime,
+                'updated_at'=>new DateTime 
+            ]
+            
+        ]
+        ;
         DB::table('users')->insert($user);
     }
 }
