@@ -13,7 +13,7 @@
 
     <input id="password" v-model="password" type="password" name="password" placeholder="رمز عبور">
 
-    <input type="submit" value="Submit">
+    <input type="submit" value="Submit" v-on:click="getToken()">
 
     </div>
   </div>
@@ -24,7 +24,6 @@ export default {
   data () {
     return {
       errors: [],
-      name: null,
       email: null,
       password:null
     }
@@ -34,13 +33,13 @@ export default {
     checkForm: function (e) {
       this.errors = [];
 
-      if (!this.name) {
-        this.errors.push("Name required.");
-      }
       if (!this.email) {
         this.errors.push('Email required.');
       } else if (!this.validEmail(this.email)) {
         this.errors.push('Valid email required.');
+      }
+      if (this.password.length < 4) {
+        this.errors.push("Name required.");
       }
 
       if (!this.errors.length) {
@@ -52,6 +51,23 @@ export default {
     validEmail: function (email) {
       var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       return re.test(email);
+    },
+    getToken(){
+      console.log(this.email);
+      console.log(this.password);
+      axios.post('oauth/token',{
+        grant_type: 'password',
+        client_id: 1,
+        client_secret: '6ZyjshdLup9aHbnqzftQYmGclYE4dMS2gFlPGKW3',
+        username: this.email,
+        password: this.password
+      }).then (response => {
+        this.tokens = response;
+        console.log(response);
+      })
+      .catch(err => {
+        alert(err.message)
+      })
     }
   }
 }

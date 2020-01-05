@@ -43,7 +43,7 @@ export default new Router({
           {name: 'بخش خرید /',link:'/shop'}
         ]
       }
-    },git status
+    },
     {
       path: "/acc",
       name: "access",

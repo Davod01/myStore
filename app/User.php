@@ -6,12 +6,13 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Laravel\Passport\HasApiTokens;
 
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
-    use HasApiTokens,Notifiable,SoftDeletes;
+    use Notifiable,SoftDeletes;
 
+    protected $keyType = 'integer';
+    
     /**
      * The attributes that are mass assignable.
      *
@@ -41,5 +42,38 @@ class User extends Authenticatable
 
     public function orders(){
         return $this->hasMany(Order::class);
+    }
+
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
+
+    /**
+     * Get the password for the user.
+     *
+     * @return string
+     */
+    public function getAuthPassword()
+    {
+        return $this->password;
+    }
+
+    public static function create(Request $request)
+    {
+        $user = new User();
+        if (!empty($request->get('username'))) {
+            $user->username = $request->get('username');
+        }
+        if (!empty($request->get('password'))) {
+            $user->password = bcrypt($request->get('password'));
+        }
+        $user->save();
+        return $user;
     }
 }

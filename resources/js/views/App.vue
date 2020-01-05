@@ -11,6 +11,13 @@
 </template>
 <script>
   export default {
+    data () {
+      return {
+        accessToken: null,
+        tokens: [],
+        scopes: [],
+      }
+    }
   }
 </script>
 

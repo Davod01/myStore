@@ -33,7 +33,6 @@
   </div>
 </template>
 <script>
-import axios from 'axios';
 import productsComponent from '../components/Product'
 import paginationComponent from '../components/Pagination'
 

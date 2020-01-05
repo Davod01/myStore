@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class UsersTableSeeder extends Seeder
 {
@@ -15,7 +16,7 @@ class UsersTableSeeder extends Seeder
         $user = [[
             'name'=>'Admin',
             'email'=>'admin@devtest.com',
-            'password'=>bcrypt('secret'),
+            'password'=>Hash::make('1234'),
             'is_admin'=>true,
             'created_at'=>new DateTime,
             'updated_at'=>new DateTime
@@ -23,7 +24,7 @@ class UsersTableSeeder extends Seeder
             [
                 'name'=>'Davod',
                 'email'=>'davod@devtest.com',
-                'password'=>bcrypt('secret'),
+                'password'=>Hash::make('1234'),
                 'is_admin'=>false,
                 'created_at'=>new DateTime,
                 'updated_at'=>new DateTime 
