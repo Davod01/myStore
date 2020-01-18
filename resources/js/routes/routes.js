@@ -1,19 +1,19 @@
-import Vue from 'vue'
-import Router from 'vue-router'
+import vueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
+import dashboard from '../views/dashboard.vue'
+import userDashboard from '../views/userDasboard.vue'
 import Register from '../views/Register.vue'
-import access from '../views/access.vue'
 import Shop from '../views/Shop.vue'
 import singleProduct from '../views/singleProduct.vue'
 import AppHeader from '../components/navbar.vue'
 import AppFooter from "../components/footer.vue";
 
 
-Vue.use(Router)
-
-export default new Router({
+export default new vueRouter({
   linkExactActiveClass: "active",
+  history:true,
+  mode:'history',
   routes: [
     {
       path: "/",
@@ -26,9 +26,11 @@ export default new Router({
       meta: {
         breadcrombs: [
           {name: 'خانه'}
-        ]
+        ],
+        auth: undefined
       }
     },
+
     {
       path: "/shop",
       name: "Shop",
@@ -41,30 +43,33 @@ export default new Router({
         breadcrombs: [
           {name: 'خانه /',link:'/'},
           {name: 'بخش خرید /',link:'/shop'}
-        ]
+        ],
+        auth: undefined
       }
     },
-    {
-      path: "/acc",
-      name: "access",
-      components: {
-        default: access,
-      },
-    },
+
     {
       path: "/login",
-      name: "Login",
+      name: "login",
       components: {
         default: Login,
+      },
+      meta: {
+        auth: false
       }
     },
+
     {
       path: "/register",
-      name: "Register",
+      name: "register",
       components: {
         default: Register,
+      },
+      meta: {
+        auth: false
       }
     },
+
     {
       path: "/shop/:product",
       name: "singleProduct",
@@ -78,8 +83,34 @@ export default new Router({
           {name: 'خانه /',link:'/'},
           {name: 'بخش خرید /',link:'/shop'},
           {name: 'محصول'}
-        ]
+        ],
+        auth:undefined
       }
     },
+
+    //
+    //User Dashboard
+    //
+    {
+      path: '/user/dashboard',
+      name: 'userDashboard',
+      component: userDashboard,
+      meta: {
+        auth: true
+      }
+    },
+
+    //
+    //Admin Dasboard
+    //
+    {
+      path: '/admin/dashboard',
+      name: 'adminDashboard',
+      component: dashboard,
+      meta: {
+        auth: true
+      }
+    },
+    
   ]
 });

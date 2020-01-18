@@ -28,11 +28,6 @@ export default {
     }
   },
   methods: {
-    // routeTo (pRouteTo) {
-    //   if(this.BreadcrumbList[pRouteTo].link) {
-    //     thi
-    //   }
-    // },
     updateList () {
       this.BreadcrumbList = this.$route.meta.breadcrombs;
     }

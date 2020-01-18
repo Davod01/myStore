@@ -2,7 +2,7 @@
   <div class="single-product">
     <div class="single-product-info">
       <div class="product-image">
-        <img v-bind:src="Product.image + '.jpg'" class="produxt-image-main">
+        <img :src="'/' + Product.image + '.jpg'" class="produxt-image-main">
       </div>
       <div class="product-property">
         <h3 class="product-name">{{ Product.name }}</h3>

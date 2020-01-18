@@ -6,6 +6,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -62,18 +63,5 @@ class User extends Authenticatable implements JWTSubject
     public function getAuthPassword()
     {
         return $this->password;
-    }
-
-    public static function create(Request $request)
-    {
-        $user = new User();
-        if (!empty($request->get('username'))) {
-            $user->username = $request->get('username');
-        }
-        if (!empty($request->get('password'))) {
-            $user->password = bcrypt($request->get('password'));
-        }
-        $user->save();
-        return $user;
     }
 }

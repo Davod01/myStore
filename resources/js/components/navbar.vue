@@ -33,16 +33,37 @@
             <div class="user">
               <i class="fas fa-user"></i>
               <div class="user-plate">
-                <ul>
-                  <router-link to="/login">
-                    <li>
-                      ورود
-                    </li>
-                  </router-link>
-                  <router-link to="/register">
-                    <li>ثبت نام</li>
-                  </router-link>
+
+                <ul v-if="$auth.check() && $auth.user().is_admin === 1">
+                  <li v-for="(route, key) in routes.admin" v-bind:key="route.path">
+                    <router-link  :to="{ name : route.path }" :key="key">
+                        {{route.name}}
+                    </router-link>
+                  </li>
+                  <li>
+                    <a href="#" @click.prevent="$auth.logout()">خروج</a>
+                  </li>
                 </ul>
+
+                <ul v-else-if="$auth.check()">
+                   <li v-for="(route, key) in routes.user" v-bind:key="route.path">
+                    <router-link  :to="{ name : route.path }" :key="key">
+                        {{route.name}}
+                    </router-link>
+                  </li>
+                  <li>
+                    <a href="#" @click.prevent="$auth.logout()">خروج</a>
+                  </li>
+                </ul>
+
+                <ul v-else>
+                  <li v-for="(route, key) in routes.unlogged" v-bind:key="route.path">
+                    <router-link  :to="route.path" :key="key">
+                        {{route.name}}
+                    </router-link>
+                  </li>
+                </ul>
+
               </div>
             </div>
           <div class="cart" @click="cumpCartModal = !cumpCartModal"><i class="fas fa-cart"></i></div>
@@ -66,7 +87,34 @@ export default {
   },
   data () {
     return {
-      cartModal: false
+      cartModal: false,
+       routes: {
+          // UNLOGGED
+          unlogged: [
+            {
+              name: 'ورود',
+              path: 'login'
+            },
+            {
+              name: 'ثبت نام',
+              path: 'register'
+            }
+          ],
+          // LOGGED USER
+          user: [
+            {
+              name: 'پنل کاربری',
+              path: 'userDashboard'
+            }
+          ],
+          // LOGGED ADMIN
+          admin: [
+            {
+              name: 'پنل مدیریت',
+              path: 'adminDashboard'
+            }
+          ]
+      }
     }
   },
   methods: {
@@ -95,7 +143,7 @@ export default {
         this.cartModal = newValue;
       }
     }
-  }
+  },
 }
 </script>
 
@@ -225,12 +273,11 @@ export default {
     content: '';
     position: absolute;
     right: 5px;
-    top:5px;
-    height: 30px;
+    bottom: 5px;
+    height: 2px;
     width: 0px;
     background-color: red;
     transition: all 0.5s;
-    z-index: 1;
     opacity: 0.5;
   }
 

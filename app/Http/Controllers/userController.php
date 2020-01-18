@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Auth;
 use App\User;
 use Validator;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 
 class userController extends Controller
@@ -18,21 +19,14 @@ class userController extends Controller
     
     public function login(Request $request)
     {
-        $status = 401;
-        $response = ['error' => 'Unauthorised'];
+        $credentials = $request->only('email', 'password');
 
-        if (Auth::attempt($request->only(['email', 'password']))) {
-            $status = 200;
-            $response = [
-                'user' => Auth::user(),
-                'token' => Auth::user()->createToken('bigStore')->accessToken,
-            ];
+        if ($token = $this->guard()->attempt($credentials)) {
+            return response()->json(['status' => 'success'], 200)->header('Authorization', $token);
         }
 
-        return response()->json($response, $status);
+        return response()->json(['error' => 'login_error'], 401);
     }
-
-
 
 
 
@@ -40,28 +34,70 @@ class userController extends Controller
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|max:50',
-            'email' => 'required|email',
-            'password' => 'required|min:6',
-            'c_password' => 'required|same:password',
+            'userName' => 'required|string|min:3|max:30',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|min:4',
+            'password_confirmation' => 'confirmed'
+
         ]);
 
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 401);
         }
 
-        $data = $request->only(['name', 'email', 'password']);
-        $data['password'] = bcrypt($data['password']);
+        $user = new User;
+        $user['name'] = $request['userName'];
+        $user['email'] = $request['email'];
+        $user['password'] = Hash::make($request['password']);
+        $user['is_admin'] = 0;
+        $user->save();
 
-        $user = User::create($data);
-        $user->is_admin = 0;
+        return response()->json(['status' => 'success','user' => $user], 200);
+    }
 
+    public function logout()
+    {
+        $this->guard()->logout();
         return response()->json([
-            'user' => $user,
-            'token' => $user->createToken('bigStore')->accessToken,
+            'status' => 'success',
+            'msg' => 'Logged out Successfully.'
+        ], 200);
+    }
+
+
+    public function refresh()
+    {
+        if ($token = $this->guard()->refresh()) {
+            return response()
+                ->json(['status' => 'successs'], 200)
+                ->header('Authorization', $token);
+        }
+        return response()->json(['error' => 'refresh_token_error'], 401);
+    }
+
+    public function user(Request $request)
+    {
+        $user = User::find(Auth::user()->id);
+        return response()->json([
+            'status' => 'success',
+            'data' => $user
         ]);
     }
 
+    protected function respondWithToken($token)
+    {
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => $this->guard()->factory()->getTTL() * 60
+        ]);
+    }
+
+
+    private function guard()
+    {
+        return Auth::guard();
+    }
 
 
 
@@ -79,4 +115,11 @@ class userController extends Controller
         return response()->json($user->orders()->with(['product'])->get());
     }
 
+
+    public function dashboard()
+    {
+        return response()->json([
+            'this is dashboard'
+        ], 200);
+    }
 }

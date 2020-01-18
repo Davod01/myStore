@@ -10,7 +10,7 @@
         "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
     },
     "devDependencies": {
-        "axios": "^0.19.0",
+        "axios": "^0.19.1",
         "bootstrap": "^4.3.1",
         "bootstrap-vue": "^2.0.0-rc.27",
         "cross-env": "^5.1",
@@ -25,11 +25,14 @@
         "vue-template-compiler": "^2.6.10"
     },
     "dependencies": {
+        "@websanova/vue-auth": "^2.21.15-beta",
         "animate.css": "^3.7.2",
         "bulma": "^0.7.5",
+        "es6-promise": "^4.2.8",
         "eslint": "^6.1.0",
         "proud": "0.0.7",
-        "vue-router": "^3.0.7",
+        "vue-axios": "^2.1.5",
+        "vue-router": "^3.1.5",
         "vuex": "^3.1.1"
     }
 }

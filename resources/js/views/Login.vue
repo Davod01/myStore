@@ -13,7 +13,7 @@
 
     <input id="password" v-model="password" type="password" name="password" placeholder="رمز عبور">
 
-    <input type="submit" value="Submit" v-on:click="getToken()">
+    <input type="submit" value="Submit" v-on:click="login()">
 
     </div>
   </div>
@@ -24,50 +24,35 @@ export default {
   data () {
     return {
       errors: [],
-      email: null,
-      password:null
+      email: '',
+      password:'',
+      errors: [],
+      has_error:false,
+      success: false
     }
         
   },
   methods: {
-    checkForm: function (e) {
-      this.errors = [];
-
-      if (!this.email) {
-        this.errors.push('Email required.');
-      } else if (!this.validEmail(this.email)) {
-        this.errors.push('Valid email required.');
-      }
-      if (this.password.length < 4) {
-        this.errors.push("Name required.");
-      }
-
-      if (!this.errors.length) {
-        return true;
-      }
-
-      e.preventDefault();
-    },
-    validEmail: function (email) {
-      var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      return re.test(email);
-    },
-    getToken(){
-      console.log(this.email);
-      console.log(this.password);
-      axios.post('oauth/token',{
-        grant_type: 'password',
-        client_id: 1,
-        client_secret: '6ZyjshdLup9aHbnqzftQYmGclYE4dMS2gFlPGKW3',
-        username: this.email,
-        password: this.password
-      }).then (response => {
-        this.tokens = response;
-        console.log(response);
-      })
-      .catch(err => {
-        alert(err.message)
-      })
+    login() {
+        // get the redirect object
+        var redirect = this.$auth.redirect()
+        var app = this
+        this.$auth.login({
+          params: {
+            email: app.email,
+            password: app.password
+          },
+          success: function() {
+            // handle redirection
+            const redirectTo = redirect ? redirect.from.name : this.$auth.user().is_admin === 1 ? 'admin.dashboard' : 'home'
+            this.$router.push({name: redirectTo})
+          },
+          error: function() {
+            app.has_error = true
+          },
+          rememberMe: true,
+          fetchUser: true
+        })
     }
   }
 }
