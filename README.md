@@ -1,2 +1,2 @@
 # myStore
-a example store web site created by vuejs and laravel
+a simple store web site created by vuejs and laravel
