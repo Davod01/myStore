@@ -26,6 +26,9 @@ Route::get('/auth/refresh', 'userController@refresh');
 
 
 Route::middleware('auth:api')->group(function () {
+
+    Route::post('/user/ordered', 'OrderController@store');
+
     // Get user info
     Route::get('/auth/user', 'userController@user');
     // Logout user from application

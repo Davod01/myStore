@@ -49,7 +49,7 @@ class userController extends Controller
         $user['name'] = $request['userName'];
         $user['email'] = $request['email'];
         $user['password'] = Hash::make($request['password']);
-        $user['is_admin'] = 0;
+        $user['role'] = 1;
         $user->save();
 
         return response()->json(['status' => 'success','user' => $user], 200);

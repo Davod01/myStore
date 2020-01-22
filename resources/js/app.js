@@ -8,6 +8,8 @@ import auth from './auth'
 import axios from 'axios';
 import './bootstrap'
 import Store from './store'
+import VueCookies from 'vue-cookies'
+
 
 window.Vue = Vue
 // Set Vue router
@@ -19,6 +21,9 @@ Vue.use(VueAxios, axios)
 
 Vue.use(VueAuth, auth)
 
+Vue.use(VueCookies)
+
+Vue.$cookies.config('7d')
 
 const app = new Vue({
   el: '#app',

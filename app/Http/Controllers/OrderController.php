@@ -36,14 +36,15 @@ class OrderController extends Controller
 
 
 
+
     /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+
     }
 
     /**
@@ -52,20 +53,24 @@ class OrderController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $req)
     {
-        $order = Order::create([
-            'product_id' => $request->product_id,
-            'user_id' => Auth::id(),
-            'quantity' => $request->quantity,
-            'address' => $request->address
-        ]);
+        $address = $req['address'];
+        $len = count($req['orders']);
 
-        return response()->json([
-            'status' => (bool) $order,
-            'data'   => $order,
-            'message' => $order ? 'Order Created!' : 'Error Creating Order'
-        ]);
+        for ($i = 0; $i < $len; $i++) {
+
+            $order = new Order;
+            $order['product_id'] = $req['orders'][$i][0];
+            $order['user_id'] = Auth::user()->id;
+            $order['quantity'] =   $req['orders'][$i][1];
+            $order['address'] = $address;
+            $order['is_delivered'] = false;
+
+            $order->save();
+        }
+
+        return response()->json('ok',200);
     }
 
     /**
