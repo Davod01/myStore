@@ -17,7 +17,7 @@ class UsersTableSeeder extends Seeder
             'name'=>'Admin',
             'email'=>'admin@devtest.com',
             'password'=>Hash::make('1234'),
-            'is_admin'=>true,
+            'role'=>2,
             'created_at'=>new DateTime,
             'updated_at'=>new DateTime
             ],
@@ -25,7 +25,7 @@ class UsersTableSeeder extends Seeder
                 'name'=>'Davod',
                 'email'=>'davod@devtest.com',
                 'password'=>Hash::make('1234'),
-                'is_admin'=>false,
+                'role'=>1,
                 'created_at'=>new DateTime,
                 'updated_at'=>new DateTime 
             ]

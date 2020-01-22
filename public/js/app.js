@@ -4068,6 +4068,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'singleProduct',
   data: function data() {
@@ -8759,7 +8761,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.add-to-cart{\r\n    margin: 1rem auto;\r\n    text-align: center\n}\n.add-to-cart input {\r\n    background: #fff;\r\n    padding: 5px;\r\n    height: 40px;\r\n    border: 1px solid #ebebeb;\r\n    text-align: center;\r\n    width:120px;\n}\n.add-to-cart div{\r\n    background: #f1ac06 none repeat scroll 0 0;\r\n    border-color: #f1ac06;\r\n    border-radius: 3px;\r\n    color: #fff;\r\n    display: inline-block;\r\n    height: 40px;\r\n    line-height: 36px;\r\n    padding: 0 10px;\r\n    text-align: center;\r\n    text-transform: capitalize;\r\n    width: 140px;\r\n    cursor: pointer;\n}\n@media screen and (min-width:799px) {\n.single-product{\r\n      display: flex;\r\n      flex-direction: column;\r\n      margin: 2rem;\n}\n.single-product-info{\r\n      display: flex;\r\n      flex-direction: row;\n}\n}\n@media screen and (max-width: 798px) and (min-width: 498px) {\n.add-to-cart input {\r\n    width:40%\n}\n.add-to-cart a{\r\n    width: 40%;\n}\n}\n@media screen and (max-width: 497px) {\n.produxt-image-main {\r\n    width: 100%;\n}\n.product-name{\r\n    margin: 1rem 0;\n}\n.product-price{\r\n    margin: 1rem 0;\n}\n.product-description {\r\n    font-size: 1rem;\n}\n.add-to-cart input {\r\n    width:40%\n}\n.add-to-cart a{\r\n    width: 40%;\n}\n}\r\n", ""]);
+exports.push([module.i, "\n.add-to-cart-input {\n    background: #fff;\n    padding: 5px;\n    height: 25px;\n    border: 1px solid #ebebeb;\n    border-radius: 50px;\n    text-align: center;\n    width:100px;\n}\n.add-to-cart-submit{\n    background: #f1ac06 none repeat scroll 0 0;\n    border-color: #f1ac06;\n    color: #fff;\n    display: inline-block;\n    height: 40px;\n    border-radius: 15px;\n    line-height: 36px;\n    text-align: center;\n    text-transform: capitalize;\n    width: 100px;\n    cursor: pointer;\n}\n.single-product{\n    display: flex;\n    flex-direction: column;\n    margin: 2rem;\n}\n.single-product-info{\n    display: flex;\n    flex-direction: row;\n}\n.product-property {\n    flex-grow: 1;\n    display: flex;\n    margin-right: 1.5rem;\n    flex-direction: column;\n}\n.product-property * {\n    margin: 0.5rem 0 0.5rem 0;\n}\n@media screen and (min-width:799px) {\n}\n@media screen and (max-width: 798px) and (min-width: 498px) {\n.add-to-cart input {\n    width:40%\n}\n.add-to-cart a{\n    width: 40%;\n}\n}\n@media screen and (max-width: 497px) {\n.produxt-image-main {\n    width: 100%;\n}\n.product-name{\n    margin: 1rem 0;\n}\n.product-price{\n    margin: 1rem 0;\n}\n.product-description {\n    font-size: 1rem;\n}\n.add-to-cart input {\n    width:40%\n}\n.add-to-cart a{\n    width: 40%;\n}\n}\n", ""]);
 
 // exports
 
@@ -24708,34 +24710,45 @@ var render = function() {
           _vm._v(_vm._s(_vm.Product.name))
         ]),
         _vm._v(" "),
-        _c("p", { staticClass: "product-price" }, [
-          _vm._v(_vm._s(_vm.Product.price) + " ریال")
+        _c("p", [_vm._v(_vm._s(_vm.Product.price) + " ریال")]),
+        _vm._v(" "),
+        _vm._m(0),
+        _vm._v(" "),
+        _c("div", [
+          _c(
+            "div",
+            {
+              staticClass: "add-to-cart-submit",
+              on: {
+                click: function($event) {
+                  return _vm.Add_To_Cart(_vm.Product)
+                }
+              }
+            },
+            [_vm._v("افزودن به سبد")]
+          )
         ])
       ])
     ]),
     _vm._v(" "),
     _c("div", { staticClass: "product-description" }, [
       _vm._v(_vm._s(_vm.Product.description))
-    ]),
-    _vm._v(" "),
-    _c("div", { staticClass: "add-to-cart" }, [
-      _c(
-        "div",
-        {
-          on: {
-            click: function($event) {
-              return _vm.Add_To_Cart(_vm.Product)
-            }
-          }
-        },
-        [_vm._v("افزودن به سبد")]
-      ),
-      _vm._v(" "),
-      _c("input", { attrs: { type: "number", min: "1", value: "1" } })
     ])
   ])
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", [
+      _c("input", {
+        staticClass: "add-to-cart-input",
+        attrs: { type: "number", min: "1", value: "1" }
+      })
+    ])
+  }
+]
 render._withStripped = true
 
 
