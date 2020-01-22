@@ -27,7 +27,6 @@ export default {
       email: '',
       password:'',
       errors: [],
-      has_error:false,
       success: false
     }
         
@@ -44,11 +43,11 @@ export default {
           },
           success: function() {
             // handle redirection
-            const redirectTo = redirect ? redirect.from.name : this.$auth.user().is_admin === 1 ? 'admin.dashboard' : 'home'
+            const redirectTo = redirect ? redirect.from.name : this.$auth.user().role === 1 ? 'adminDashboard' : 'Home'
             this.$router.push({name: redirectTo})
           },
           error: function() {
-            app.has_error = true
+            alert('email or password not valid')
           },
           rememberMe: true,
           fetchUser: true

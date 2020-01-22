@@ -3332,6 +3332,23 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'cartModal',
   props: {
@@ -3342,7 +3359,9 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   data: function data() {
-    return {};
+    return {
+      address: ''
+    };
   },
   computed: {
     ordersList: function ordersList() {
@@ -3357,7 +3376,33 @@ __webpack_require__.r(__webpack_exports__);
       this.$emit('toggleCartModal', value);
     },
     removeFromOrderlist: function removeFromOrderlist(order) {
-      this.ordersList.splice(this.ordersList.indexOf(order), 1);
+      this.$store.commit('remove_Product', order);
+    },
+    reset_orders: function reset_orders() {
+      this.$store.commit('reset_orderList');
+    },
+    checkOut_orders: function checkOut_orders() {
+      var _this = this;
+
+      if (this.address.length < 8) {
+        alert('لطفا ابتدا ادرستان را وارد کنید');
+      } else if (this.ordersList.length < 1) {
+        alert('شما کالایی انتخاب نکردید');
+      } else {
+        axios.post('/api/user/ordered', {
+          address: this.address,
+          orders: this.$store.getters.getOrderedProduct
+        }).then(function (res) {
+          console.log(res);
+
+          _this.reset_orders();
+
+          _this.address = '';
+          alert('سفارش شما ثبت شد');
+        })["catch"](function (error) {
+          console.log(error);
+        });
+      }
     }
   },
   filters: {
@@ -3504,20 +3549,20 @@ var myNav = document.getElementsByClassName('nav');
         // UNLOGGED
         unlogged: [{
           name: 'ورود',
-          path: 'login'
+          path: '/login'
         }, {
           name: 'ثبت نام',
-          path: 'register'
+          path: '/register'
         }],
         // LOGGED USER
         user: [{
           name: 'پنل کاربری',
-          path: 'userDashboard'
+          path: '/user/dashboard'
         }],
         // LOGGED ADMIN
         admin: [{
           name: 'پنل مدیریت',
-          path: 'adminDashboard'
+          path: '/admin/dashboard'
         }]
       }
     };
@@ -3576,6 +3621,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {};
+  },
+  created: function created() {
+    if (this.$cookies.isKey('cart')) {
+      this.$store.commit('set_orderList', Vue.$cookies.get('cart'));
+    }
   }
 });
 
@@ -3637,7 +3687,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       errors: [],
       email: '',
       password: ''
-    }, _defineProperty(_ref, "errors", []), _defineProperty(_ref, "has_error", false), _defineProperty(_ref, "success", false), _ref;
+    }, _defineProperty(_ref, "errors", []), _defineProperty(_ref, "success", false), _ref;
   },
   methods: {
     login: function login() {
@@ -3651,13 +3701,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         },
         success: function success() {
           // handle redirection
-          var redirectTo = redirect ? redirect.from.name : this.$auth.user().is_admin === 1 ? 'admin.dashboard' : 'home';
+          var redirectTo = redirect ? redirect.from.name : this.$auth.user().role === 1 ? 'adminDashboard' : 'Home';
           this.$router.push({
             name: redirectTo
           });
         },
         error: function error() {
-          app.has_error = true;
+          alert('email or password not valid');
         },
         rememberMe: true,
         fetchUser: true
@@ -8576,7 +8626,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.cart-modal-container {\r\n  position: fixed;\r\n  top: 0;\r\n  left: 0;\r\n  right: 0;\r\n  bottom: 0;\r\n  background-color: rgba(60,60,60,0.5);\r\n  overflow: hidden;\n}\n.hide-cart-modal{\r\n  position: fixed;\r\n  top: 0;\r\n  left: 0;\r\n  right: 0;\r\n  bottom: 0;\r\n  background-color: rgba(60,60,60,0.5);\r\n  overflow: hidden;\n}\n.cart-modal {\r\n  background-color: white;\r\n  display: flex;\r\n  flex-direction: row;\r\n  position: absolute;\r\n  left: 15%;\r\n  top:5%;\r\n  width: 70%;\r\n  height: 90%;\n}\n.cart-orders {\r\n  display: flex;\r\n  flex-direction: column;\r\n  width: 70%;\n}\n.cart-header {\r\n  margin: 1rem 2rem 0 0;\r\n  flex-grow: 1;\n}\n.cart-main {\r\n  margin: 1.5rem;\r\n  display: flex;\r\n  flex-direction: column;\r\n  align-items: flex-start;\r\n  overflow: auto;\r\n  flex-grow: 4;\n}\n.cart-main ul {\r\n  display: flex;\r\n  flex-direction: row;\r\n  align-items: center;\n}\n.cart-status {\r\n  display: flex;\r\n  flex-direction: row;\r\n  justify-content: space-between;\r\n  margin: 0 1rem;\r\n  height: 2rem;\n}\n.cart-main-form{\r\n  background-color: #484a52;\r\n  width: 30%;\r\n  margin: 1rem;\n}\n.cycle-image {\r\n  width: 50px;\r\n  height: 50px;\r\n  border-radius: 50px;\n}\n.cart-list-image{\r\n  width: 80px;\n}\n.cart-list-name{\r\n  width: 150px;\n}\n.cart-list-number{\r\n  width: 30px;\n}\n.cart-list-price{\r\n  width: 80px;\n}\n.cart-list-total{\r\n  width: 110px;\n}\n.cart-list-close {\r\n  width: 30px;\r\n  cursor: pointer;\n}\n.cart-list-close:hover {\r\n  transform: scale(1.2);\n}\n.number-of-product {\r\n  width: 40px;\r\n  display: inline-block;\n}\n@media screen and (max-width: 798px) and (min-width: 498px)  {\n}\n@media screen and (max-width: 497px) {\n}\r\n\r\n/* \r\n.fade-modal-enter-active, .fade-modal-leave-active {\r\n  transition: opacity .5s;\r\n}\r\n.fade-modal-enter, .fade-modal-leave-to  {\r\n  opacity: 0;\r\n}\r\n */\r\n\r\n/* .fade-modal-enter-active {\r\n  transition: all .5s ease;\r\n}\r\n.fade-modal-leave-active {\r\n  transition: all 1s cubic-bezier(1.0, 0.5, 0.8, 1.0);\r\n}\r\n.fade-modal-enter, .fade-modal-leave-to\r\n{\r\n  transform: translateX(10px);\r\n  opacity: 0;\r\n} */\n.fade-modal-enter-active {\r\n  animation: bounce-in .5s;\n}\n.fade-modal-leave-active {\r\n  animation: bounce-in .5s reverse;\n}\n@keyframes bounce-in {\n0% {\r\n    transform: scale(0);\n}\n50% {\r\n    transform: scale(1.5);\n}\n100% {\r\n    transform: scale(1);\n}\n}\r\n\r\n", ""]);
+exports.push([module.i, "\n.cart-modal-container {\r\n  position: fixed;\r\n  top: 0;\r\n  left: 0;\r\n  right: 0;\r\n  bottom: 0;\r\n  background-color: rgba(60,60,60,0.5);\r\n  overflow: hidden;\n}\n.hide-cart-modal{\r\n  position: fixed;\r\n  top: 0;\r\n  left: 0;\r\n  right: 0;\r\n  bottom: 0;\r\n  background-color: rgba(60,60,60,0.5);\r\n  overflow: hidden;\n}\n.cart-modal {\r\n  background-color: white;\r\n  display: flex;\r\n  flex-direction: column;\r\n  position: absolute;\r\n  left: 15%;\r\n  top:5%;\r\n  width: 70%;\r\n  height: 90%;\n}\n.cart-header {\r\n  height: 2.5rem;\r\n  margin-bottom: 0.5rem;\n}\nhr{\r\n  margin: 0 1rem;\n}\n.cart-header h3 {\r\n  margin: 0.5rem 1rem 0.5rem 0;\n}\n.cart-main {\r\n  margin: 1.5rem;\r\n  display: flex;\r\n  flex-direction: row;\r\n  align-items: flex-start;\r\n  overflow: hidden;\r\n  flex-grow: 4;\n}\n.cart-main ul {\r\n  display: flex;\r\n  direction: ltr;\r\n  flex-direction: column;\r\n  width: 80%;\r\n  height: 100%;\r\n  overflow-y: scroll;\n}\n.cart-main ul li {\r\n  width: 100%;\r\n  display: flex;\r\n  direction: rtl;\n}\n.checkOut {\r\n  display: flex;\r\n  flex-direction: column;\r\n  height: 10rem;\r\n  align-items: center;\r\n  justify-content: center;\r\n  width: 20%;\r\n  background: rgb(24,24,24);\r\n  background: linear-gradient(0deg, rgba(24,24,24,1) 0%, rgba(62,62,62,1) 100%);\r\n  align-self: flex-end;\r\n  color: #fff\n}\n.checkOut input {\r\n  height: 2rem;\r\n  width: 8rem;\r\n  margin-top: 1rem;\n}\n.checkOut-submit {\r\n  margin-bottom: 4px;\r\n  flex-grow: 0.5;\r\n  text-align: center;\r\n  width: 5rem;\r\n  padding: 0 1rem;\r\n  background-color: #C70039;\r\n  border-radius: 15px;\r\n  color: #fff;\r\n  cursor: pointer;\n}\n.cart-status {\r\n  display: flex;\r\n  flex-direction: row-reverse;\r\n  justify-content: space-between;\r\n  margin: 0 1rem;\r\n  height: 2rem;\n}\n.cycle-image {\r\n  width: 5rem;\r\n  height: 5rem;\r\n  border-radius: 50px;\n}\n.cart-product-image{\r\n  width: 7rem;\r\n    height: 6rem;\r\n    display: flex;\r\n    justify-content: center;\r\n    align-items: center;\n}\n.cart-product-info {\r\n  display: flex;\r\n  flex-grow: 1;\r\n  padding: 0.5rem 0;\n}\n.cart-list-name{\r\n  width: 150px;\r\n  display: flex;\r\n  flex-direction: column;\n}\n.cart-list-number{\r\n  width: 80px;\r\n  display: flex;\r\n  justify-content: center;\r\n  align-items: center;\n}\n.cart-list-price{\r\n  width: 80px;\r\n  font-size: 0.8rem;\r\n  padding: 0.5rem 0;\r\n  font-weight: 100;\n}\n.cart-list-totalPrice {\r\n  display: flex;\r\n  justify-content: center;\r\n  align-items: center;\n}\n.cart-list-total{\r\n  width: 110px;\n}\n.cart-list-close {\r\n  width: 30px;\r\n  cursor: pointer;\r\n  color: cornflowerblue;\r\n  font-size: 0.9rem;\n}\n.cart-list-close:hover {\r\n  transform: scale(1.2);\n}\n.number-of-product {\r\n  width: 40px;\r\n  display: inline-block;\n}\n@media screen and (max-width: 798px) and (min-width: 498px)  {\n}\n@media screen and (max-width: 497px) {\n}\r\n\r\n/* \r\n.fade-modal-enter-active, .fade-modal-leave-active {\r\n  transition: opacity .5s;\r\n}\r\n.fade-modal-enter, .fade-modal-leave-to  {\r\n  opacity: 0;\r\n}\r\n */\r\n\r\n/* .fade-modal-enter-active {\r\n  transition: all .5s ease;\r\n}\r\n.fade-modal-leave-active {\r\n  transition: all 1s cubic-bezier(1.0, 0.5, 0.8, 1.0);\r\n}\r\n.fade-modal-enter, .fade-modal-leave-to\r\n{\r\n  transform: translateX(10px);\r\n  opacity: 0;\r\n} */\n.fade-modal-enter-active {\r\n  animation: bounce-in .5s;\n}\n.fade-modal-leave-active {\r\n  animation: bounce-in .5s reverse;\n}\n@keyframes bounce-in {\n0% {\r\n    transform: scale(0);\n}\n50% {\r\n    transform: scale(1.5);\n}\n100% {\r\n    transform: scale(1);\n}\n}\r\n\r\n", ""]);
 
 // exports
 
@@ -23351,6 +23401,132 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var _typeof="fun
 
 /***/ }),
 
+/***/ "./node_modules/vue-cookies/vue-cookies.js":
+/*!*************************************************!*\
+  !*** ./node_modules/vue-cookies/vue-cookies.js ***!
+  \*************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * Vue Cookies v1.6.1
+ * https://github.com/cmp-cc/vue-cookies
+ *
+ * Copyright 2016, cmp-cc
+ * Released under the MIT license
+ */
+
+(function() {
+
+    var defaultConfig = {
+        expires : '1d',
+        path : '; path=/',
+        domain:'',
+        secure:'',
+    }
+
+    var VueCookies = {
+        // install of Vue
+        install: function(Vue) {
+            Vue.prototype.$cookies = this
+            Vue.$cookies = this
+        },
+        config : function(expireTimes,path,domain,secure) {
+            defaultConfig.expires = expireTimes ? expireTimes : '1d';
+            defaultConfig.path = path ? '; path=' + path : '; path=/';
+            defaultConfig.domain = domain ? '; domain=' + domain : '';
+            defaultConfig.secure = secure ? '; secure' : '';
+        },
+        get: function(key) {
+            var value = decodeURIComponent(document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*" + encodeURIComponent(key).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1")) || null
+
+            if(value && value.substring(0,1) === "{" && value.substring(value.length-1,value.length) === "}") {
+                try {
+                    value = JSON.parse(value)
+                }catch (e) {
+                    return value;
+                }
+            }
+            return value;
+        },
+        set: function(key, value, expireTimes, path, domain, secure) {
+            if (!key) {
+                throw new Error("cookie name is not find in first argument")
+            }else if(/^(?:expires|max\-age|path|domain|secure)$/i.test(key)){
+                throw new Error("cookie key name illegality ,Cannot be set to ['expires','max-age','path','domain','secure']\t","current key name: "+key);
+            }
+            // support json object
+            if(value && value.constructor === Object) {
+                value = JSON.stringify(value);
+            }
+            var _expires = "";
+            expireTimes = expireTimes === undefined ? defaultConfig.expires : expireTimes;
+            if (expireTimes && expireTimes != 0) {
+                switch (expireTimes.constructor) {
+                    case Number:
+                        if(expireTimes === Infinity || expireTimes === -1) _expires = "; expires=Fri, 31 Dec 9999 23:59:59 GMT";
+                        else _expires = "; max-age=" + expireTimes;
+                        break;
+                    case String:
+                        if (/^(?:\d{1,}(y|m|d|h|min|s))$/i.test(expireTimes)) {
+                            // get capture number group
+                            var _expireTime = expireTimes.replace(/^(\d{1,})(?:y|m|d|h|min|s)$/i, "$1");
+                            // get capture type group , to lower case
+                            switch (expireTimes.replace(/^(?:\d{1,})(y|m|d|h|min|s)$/i, "$1").toLowerCase()) {
+                                // Frequency sorting
+                                case 'm':  _expires = "; max-age=" + +_expireTime * 2592000; break; // 60 * 60 * 24 * 30
+                                case 'd':  _expires = "; max-age=" + +_expireTime * 86400; break; // 60 * 60 * 24
+                                case 'h': _expires = "; max-age=" + +_expireTime * 3600; break; // 60 * 60
+                                case 'min':  _expires = "; max-age=" + +_expireTime * 60; break; // 60
+                                case 's': _expires = "; max-age=" + _expireTime; break;
+                                case 'y': _expires = "; max-age=" + +_expireTime * 31104000; break; // 60 * 60 * 24 * 30 * 12
+                                default: new Error("unknown exception of 'set operation'");
+                            }
+                        } else {
+                            _expires = "; expires=" + expireTimes;
+                        }
+                        break;
+                    case Date:
+                        _expires = "; expires=" + expireTimes.toUTCString();
+                        break;
+                }
+            }
+            document.cookie = encodeURIComponent(key) + "=" + encodeURIComponent(value) + _expires + (domain ? "; domain=" + domain : defaultConfig.domain) + (path ? "; path=" + path : defaultConfig.path) + (secure === undefined ? defaultConfig.secure : secure ? "; secure" : "");
+            return this;
+        },
+        remove: function(key, path, domain) {
+            if (!key || !this.isKey(key)) {
+                return false;
+            }
+            document.cookie = encodeURIComponent(key) + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT" + (domain ? "; domain=" + domain : defaultConfig.domain) + (path ? "; path=" + path : defaultConfig.path);
+            return this;
+        },
+        isKey: function(key) {
+            return (new RegExp("(?:^|;\\s*)" + encodeURIComponent(key).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=")).test(document.cookie);
+        },
+        keys:  function() {
+            if(!document.cookie) return [];
+            var _keys = document.cookie.replace(/((?:^|\s*;)[^\=]+)(?=;|$)|^\s*|\s*(?:\=[^;]*)?(?:\1|$)/g, "").split(/\s*(?:\=[^;]*)?;\s*/);
+            for (var _index = 0; _index < _keys.length; _index++) {
+                _keys[_index] = decodeURIComponent(_keys[_index]);
+            }
+            return _keys;
+        }
+    }
+
+    if (true) {
+        module.exports = VueCookies;
+    } else {}
+    // vue-cookies can exist independently,no dependencies library
+    if(typeof window!=="undefined"){
+        window.$cookies = VueCookies;
+    }
+
+})()
+
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Pagination.vue?vue&type=template&id=d7acf176&":
 /*!*************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Pagination.vue?vue&type=template&id=d7acf176& ***!
@@ -23543,111 +23719,181 @@ var render = function() {
           }),
           _vm._v(" "),
           _c("div", { staticClass: "cart-modal" }, [
-            _c("div", { staticClass: "cart-orders" }, [
-              _c("div", { staticClass: "cart-header" }, [
-                _c("div", { staticClass: "cart-header-title" }, [
-                  _c("h2", [_vm._v("سبد خرید")])
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "cart-header-close" })
-              ]),
-              _vm._v(" "),
+            _c("div", { staticClass: "cart-header" }, [
+              _c("div", { staticClass: "cart-header-title" }, [
+                _c("h3", [_vm._v("سبد خرید")])
+              ])
+            ]),
+            _vm._v(" "),
+            _c("hr"),
+            _vm._v(" "),
+            _c("div", { staticClass: "cart-main" }, [
               _c(
-                "div",
-                { staticClass: "cart-main" },
+                "ul",
                 _vm._l(_vm.ordersList, function(order, index) {
-                  return _c("ul", { key: index }, [
-                    _c("li", { staticClass: "cart-list-image" }, [
+                  return _c("li", { key: index }, [
+                    _c("div", { staticClass: "cart-product-image" }, [
                       _c("img", {
                         staticClass: "cycle-image",
                         attrs: { src: order.image + ".jpg" }
                       })
                     ]),
                     _vm._v(" "),
-                    _c("li", { staticClass: "cart-list-name" }, [
-                      _vm._v(_vm._s(_vm._f("truncate")(order.name)))
-                    ]),
-                    _vm._v(" "),
-                    _c("li", { staticClass: "cart-list-price" }, [
-                      _c("input", {
-                        directives: [
+                    _c("div", { staticClass: "cart-product-info" }, [
+                      _c("div", { staticClass: "cart-list-name" }, [
+                        _c("div", [
+                          _vm._v(_vm._s(_vm._f("truncate")(order.name)))
+                        ]),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "cart-list-price" }, [
+                          _vm._v(_vm._s(order.price))
+                        ]),
+                        _vm._v(" "),
+                        _c(
+                          "div",
                           {
-                            name: "model",
-                            rawName: "v-model.number",
-                            value: order.number,
-                            expression: "order.number",
-                            modifiers: { number: true }
-                          }
-                        ],
-                        staticClass: "number-of-product",
-                        attrs: { type: "number", min: "1", max: "99" },
-                        domProps: { value: order.number },
-                        on: {
-                          input: function($event) {
-                            if ($event.target.composing) {
-                              return
+                            staticClass: "cart-list-close",
+                            on: {
+                              click: function($event) {
+                                return _vm.removeFromOrderlist(order)
+                              }
                             }
-                            _vm.$set(
-                              order,
-                              "number",
-                              _vm._n($event.target.value)
-                            )
                           },
-                          blur: function($event) {
-                            return _vm.$forceUpdate()
+                          [_vm._v("حذف")]
+                        )
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "cart-list-number" }, [
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model.number",
+                              value: order.number,
+                              expression: "order.number",
+                              modifiers: { number: true }
+                            }
+                          ],
+                          staticClass: "number-of-product",
+                          attrs: { type: "number", min: "1", max: "99" },
+                          domProps: { value: order.number },
+                          on: {
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.$set(
+                                order,
+                                "number",
+                                _vm._n($event.target.value)
+                              )
+                            },
+                            blur: function($event) {
+                              return _vm.$forceUpdate()
+                            }
                           }
-                        }
-                      })
-                    ]),
-                    _vm._v(" "),
-                    _c("li", { staticClass: "cart-list-price" }, [
-                      _vm._v(_vm._s(order.price))
-                    ]),
-                    _vm._v(" "),
-                    _c("li", { staticClass: "cart-list-total" }, [
-                      _vm._v(_vm._s(order.price * order.number))
-                    ]),
-                    _vm._v(" "),
-                    _c(
-                      "li",
-                      {
-                        staticClass: "cart-list-close",
-                        on: {
-                          click: function($event) {
-                            return _vm.removeFromOrderlist(order)
-                          }
-                        }
-                      },
-                      [
-                        _c("i", {
-                          staticClass: "far fa-times-circle color-red"
                         })
-                      ]
-                    )
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "cart-list-totalPrice" }, [
+                        _vm._v(_vm._s(order.price * order.number) + " ریال")
+                      ])
+                    ])
                   ])
                 }),
                 0
               ),
               _vm._v(" "),
-              _c("div", { staticClass: "cart-status" }, [
-                _c(
-                  "p",
-                  {
-                    staticStyle: { cursor: "pointer" },
-                    on: {
-                      click: function($event) {
-                        return _vm.toggleCartModal(_vm.showModal)
-                      }
-                    }
-                  },
-                  [_vm._v("ادامه خرید")]
-                ),
-                _vm._v(" "),
-                _c("p", [_vm._v("مجموع: " + _vm._s(_vm.totalPrice))])
-              ])
+              _vm.$auth.check()
+                ? _c("div", { staticClass: "checkOut" }, [
+                    _c("div", { staticStyle: { "flex-grow": "4" } }, [
+                      _c("p", [_vm._v("مجموع: " + _vm._s(_vm.totalPrice))]),
+                      _vm._v(" "),
+                      _c("p", [
+                        _vm._v("تعداد کالا : " + _vm._s(_vm.ordersList.length))
+                      ]),
+                      _vm._v(" "),
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.address,
+                            expression: "address"
+                          }
+                        ],
+                        attrs: {
+                          type: "text",
+                          max: "200",
+                          min: "5",
+                          placeholder: "ادرس شما"
+                        },
+                        domProps: { value: _vm.address },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.address = $event.target.value
+                          }
+                        }
+                      })
+                    ]),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      {
+                        staticClass: "checkOut-submit",
+                        on: {
+                          click: function($event) {
+                            return _vm.checkOut_orders()
+                          }
+                        }
+                      },
+                      [_vm._v("خرید")]
+                    )
+                  ])
+                : _c(
+                    "div",
+                    { staticClass: "checkOut" },
+                    [
+                      _c("div", { staticStyle: { "flex-grow": "4" } }, [
+                        _c("p", [_vm._v("مجموع: " + _vm._s(_vm.totalPrice))]),
+                        _vm._v(" "),
+                        _c("p", [
+                          _vm._v(
+                            "تعداد کالا : " + _vm._s(_vm.ordersList.length)
+                          )
+                        ])
+                      ]),
+                      _vm._v(" "),
+                      _c(
+                        "router-link",
+                        {
+                          staticClass: "checkOut-submit",
+                          attrs: { to: "/login" }
+                        },
+                        [_vm._v("ورود")]
+                      )
+                    ],
+                    1
+                  )
             ]),
             _vm._v(" "),
-            _c("div", { staticClass: "cart-main-form" })
+            _c("div", { staticClass: "cart-status" }, [
+              _c(
+                "p",
+                {
+                  staticStyle: { cursor: "pointer" },
+                  on: {
+                    click: function($event) {
+                      return _vm.toggleCartModal(_vm.showModal)
+                    }
+                  }
+                },
+                [_vm._v("ادامه خرید")]
+              )
+            ])
           ])
         ])
       : _vm._e()
@@ -23777,7 +24023,7 @@ var render = function() {
               _c("i", { staticClass: "fas fa-user" }),
               _vm._v(" "),
               _c("div", { staticClass: "user-plate" }, [
-                _vm.$auth.check() && _vm.$auth.user().is_admin === 1
+                _vm.$auth.check() && _vm.$auth.user().role === 2
                   ? _c(
                       "ul",
                       [
@@ -23788,10 +24034,7 @@ var render = function() {
                             [
                               _c(
                                 "router-link",
-                                {
-                                  key: key,
-                                  attrs: { to: { name: route.path } }
-                                },
+                                { key: key, attrs: { to: route.path } },
                                 [
                                   _vm._v(
                                     "\n                      " +
@@ -23834,10 +24077,7 @@ var render = function() {
                             [
                               _c(
                                 "router-link",
-                                {
-                                  key: key,
-                                  attrs: { to: { name: route.path } }
-                                },
+                                { key: key, attrs: { to: route.path } },
                                 [
                                   _vm._v(
                                     "\n                      " +
@@ -40618,6 +40858,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _bootstrap__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 /* harmony import */ var _bootstrap__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(_bootstrap__WEBPACK_IMPORTED_MODULE_8__);
 /* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./store */ "./resources/js/store.js");
+/* harmony import */ var vue_cookies__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! vue-cookies */ "./node_modules/vue-cookies/vue-cookies.js");
+/* harmony import */ var vue_cookies__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(vue_cookies__WEBPACK_IMPORTED_MODULE_10__);
+
 
 
 
@@ -40635,6 +40878,8 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_router__WEBPACK_IMPORTED_MODU
 
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_axios__WEBPACK_IMPORTED_MODULE_4___default.a, axios__WEBPACK_IMPORTED_MODULE_7___default.a);
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(_websanova_vue_auth__WEBPACK_IMPORTED_MODULE_3___default.a, _auth__WEBPACK_IMPORTED_MODULE_6__["default"]);
+vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_cookies__WEBPACK_IMPORTED_MODULE_10___default.a);
+vue__WEBPACK_IMPORTED_MODULE_0___default.a.$cookies.config('7d');
 var app = new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
   el: '#app',
   router: _routes_routes__WEBPACK_IMPORTED_MODULE_1__["default"],
@@ -41435,13 +41680,37 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vuex__WEBPACK_IMPORTED_MODULE_1__
   },
   mutations: {
     addTo_OrdersList: function addTo_OrdersList(state, value) {
-      state.ordersList.push({
-        id: value.id,
-        name: value.name,
-        price: value.price,
-        image: value.image,
-        number: 1
-      });
+      var itemExist = false;
+
+      for (var i = 0; i < state.ordersList.length; i++) {
+        if (state.ordersList[i].id === value.id) {
+          itemExist = true;
+          break;
+        }
+      }
+
+      if (itemExist === false) {
+        state.ordersList.push({
+          id: value.id,
+          name: value.name,
+          price: value.price,
+          image: value.image,
+          number: 1
+        });
+      }
+
+      vue__WEBPACK_IMPORTED_MODULE_0___default.a.$cookies.set('cart', JSON.stringify(state.ordersList));
+    },
+    set_orderList: function set_orderList(state, value) {
+      state.ordersList = JSON.parse(value);
+    },
+    remove_Product: function remove_Product(state, value) {
+      state.ordersList.splice(state.ordersList.indexOf(value), 1);
+      vue__WEBPACK_IMPORTED_MODULE_0___default.a.$cookies.set('cart', JSON.stringify(state.ordersList));
+    },
+    reset_orderList: function reset_orderList(state) {
+      state.ordersList = [];
+      vue__WEBPACK_IMPORTED_MODULE_0___default.a.$cookies.remove('cart');
     }
   },
   getters: {
@@ -41449,6 +41718,13 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vuex__WEBPACK_IMPORTED_MODULE_1__
       var data = 0;
       state.ordersList.forEach(function (x) {
         data += x.number * x.price;
+      });
+      return data;
+    },
+    getOrderedProduct: function getOrderedProduct(state) {
+      var data = [];
+      state.ordersList.forEach(function (x) {
+        data.push([x.id, x.number]);
       });
       return data;
     }

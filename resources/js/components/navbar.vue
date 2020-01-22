@@ -34,9 +34,9 @@
               <i class="fas fa-user"></i>
               <div class="user-plate">
 
-                <ul v-if="$auth.check() && $auth.user().is_admin === 1">
+                <ul v-if="$auth.check() && $auth.user().role === 2">
                   <li v-for="(route, key) in routes.admin" v-bind:key="route.path">
-                    <router-link  :to="{ name : route.path }" :key="key">
+                    <router-link  :to="route.path" :key="key">
                         {{route.name}}
                     </router-link>
                   </li>
@@ -47,7 +47,7 @@
 
                 <ul v-else-if="$auth.check()">
                    <li v-for="(route, key) in routes.user" v-bind:key="route.path">
-                    <router-link  :to="{ name : route.path }" :key="key">
+                    <router-link  :to="route.path" :key="key">
                         {{route.name}}
                     </router-link>
                   </li>
@@ -93,25 +93,25 @@ export default {
           unlogged: [
             {
               name: 'ورود',
-              path: 'login'
+              path: '/login'
             },
             {
               name: 'ثبت نام',
-              path: 'register'
+              path: '/register'
             }
           ],
           // LOGGED USER
           user: [
             {
               name: 'پنل کاربری',
-              path: 'userDashboard'
+              path: '/user/dashboard'
             }
           ],
           // LOGGED ADMIN
           admin: [
             {
               name: 'پنل مدیریت',
-              path: 'adminDashboard'
+              path: '/admin/dashboard'
             }
           ]
       }

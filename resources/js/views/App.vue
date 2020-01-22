@@ -14,6 +14,11 @@
     data () {
       return {
       }
+    },
+    created () {
+      if (this.$cookies.isKey('cart')) {
+        this.$store.commit('set_orderList',Vue.$cookies.get('cart'));
+      }
     }
   }
 </script>
