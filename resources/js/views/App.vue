@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <router-view name="header"></router-view>
-    <main>
+    <main id="MainClass">
       <div class="container">
         <router-view></router-view>
       </div>
@@ -37,6 +37,17 @@ body {
   direction: rtl;
 }
 
+#app {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  height: 100vh;
+}
+
+#MainClass {
+  flex-grow: 1;
+}
+
 a {
   color: black;
   text-decoration: none;
@@ -53,6 +64,16 @@ ul{
 
 .my-inline-block{
   display: inline-block;
+}
+
+.icon-size{
+  width: 0.8rem;
+  height: 0.8rem;
+}
+
+.icon-size-2{
+  width: 1.2rem;
+  height: 1.2rem;
 }
 
 

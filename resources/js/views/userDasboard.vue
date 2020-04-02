@@ -6,7 +6,21 @@
 
 <script>
 export default {
-
+  return: {
+    registerdOeder: {
+      orderId: 0,
+      delivered: false,
+      productList: {
+        'PName' : '',
+        'PUnit' : '',
+        'Pprice': '',
+        'PImage': ''
+      }
+    }
+  },
+  mounted : {
+    
+  }
 }
 </script>
 

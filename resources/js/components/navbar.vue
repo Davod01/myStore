@@ -3,7 +3,7 @@
     <Cart :showModal="cumpCartModal" @toggleCartModal="toggleCartModal"></Cart>
     <div class="header">
       <div class="header-first-child">
-        <div class="show-nav" v-on:click='ShowNav'><i class="fas fa-align-justify"></i></div>
+        <div class="show-nav" v-on:click='ShowNav'><img src="svg/menu.svg" alt="navbar"></div>
         <div class="logo">مارکت ایرانی</div>
         <div class="nav">
           <div class="nav-close" v-on:click='HideNav'>
@@ -26,47 +26,51 @@
       <div class="header-second-child">
         
         <div class="search-bar">
-          <input type="text" placeholder="جست و جو" maxlength="30" minlength="3" />
-          <button><i class="fas fa-search"></i></button>
+          <input type="text" v-model="SearchValue" placeholder="جست و جو" maxlength="30" />
+          <transition name="serachButtonChange" >
+            <button v-if="search_button" @click="searchForProduct()"><img src="svg/search.svg" class="icon-size" alt="navbar"></button>
+          </transition>
         </div>
         <div class="header-child">
-            <div class="user">
-              <i class="fas fa-user"></i>
-              <div class="user-plate">
 
-                <ul v-if="$auth.check() && $auth.user().role === 2">
-                  <li v-for="(route, key) in routes.admin" v-bind:key="route.path">
-                    <router-link  :to="route.path" :key="key">
-                        {{route.name}}
-                    </router-link>
-                  </li>
-                  <li>
-                    <a href="#" @click.prevent="$auth.logout()">خروج</a>
-                  </li>
-                </ul>
+          <div class="cart" @click="cumpCartModal = !cumpCartModal"><img src="svg/shopping-cart.svg" class="icon-size-2" alt="cart"></div>
 
-                <ul v-else-if="$auth.check()">
-                   <li v-for="(route, key) in routes.user" v-bind:key="route.path">
-                    <router-link  :to="route.path" :key="key">
-                        {{route.name}}
-                    </router-link>
-                  </li>
-                  <li>
-                    <a href="#" @click.prevent="$auth.logout()">خروج</a>
-                  </li>
-                </ul>
+          <div class="user">
+            <img src="svg/user.svg" class="icon-size-2"  alt="cart">
+            <div class="user-plate">
 
-                <ul v-else>
-                  <li v-for="(route, key) in routes.unlogged" v-bind:key="route.path">
-                    <router-link  :to="route.path" :key="key">
-                        {{route.name}}
-                    </router-link>
-                  </li>
-                </ul>
+              <ul v-if="$auth.check() && $auth.user().role === 2">
+                <li v-for="(route, key) in routes.admin" v-bind:key="route.path">
+                  <router-link  :to="route.path" :key="key">
+                      {{route.name}}
+                  </router-link>
+                </li>
+                <li>
+                  <a href="#" @click.prevent="$auth.logout()">خروج</a>
+                </li>
+              </ul>
 
-              </div>
+              <ul v-else-if="$auth.check()">
+                  <li v-for="(route, key) in routes.user" v-bind:key="route.path">
+                  <router-link  :to="route.path" :key="key">
+                      {{route.name}}
+                  </router-link>
+                </li>
+                <li>
+                  <a href="#" @click.prevent="$auth.logout()">خروج</a>
+                </li>
+              </ul>
+
+              <ul v-else>
+                <li v-for="(route, key) in routes.unlogged" v-bind:key="route.path">
+                  <router-link  :to="route.path" :key="key">
+                      {{route.name}}
+                  </router-link>
+                </li>
+              </ul>
+
             </div>
-          <div class="cart" @click="cumpCartModal = !cumpCartModal"><i class="fas fa-cart"></i></div>
+          </div>
         </div>
       </div>
     </div>
@@ -88,6 +92,8 @@ export default {
   data () {
     return {
       cartModal: false,
+      search_button:true,
+      SearchValue: '',
        routes: {
           // UNLOGGED
           unlogged: [
@@ -132,7 +138,15 @@ export default {
     },
     toggleCartModal (value) {
       this.cumpCartModal = !value;
-    }
+    },
+    searchForProduct () {
+      if (this.SearchValue.length > 2 ) {
+        this.$store.commit('searchInProducts',this.SearchValue);
+        console.log(this.$store.getters.getFilteredProduct);
+      }
+      
+      
+    },
   },
   computed: {
     cumpCartModal: {
@@ -230,9 +244,7 @@ export default {
 
   .user {
     position: relative;
-    flex-grow: 1;
-    display: inline-block;
-    justify-content: center;
+    padding: 0 0.6rem;
   }
 
   .user-plate {
@@ -241,7 +253,7 @@ export default {
     width:100px;
     height: 90px;
     top: 46px;
-    left: 15px;
+    left: 0px;
     background: #fafafa;
   }
 
@@ -289,13 +301,15 @@ export default {
   }
 
   .cart {
-    flex-grow: 1;
+    padding: 0 0.6rem;
   }
 
   .header-child {
     flex-grow: 1;
     display: flex;
     flex-direction: row;
+    align-items: baseline;
+    justify-content: space-between;
   }
 
 

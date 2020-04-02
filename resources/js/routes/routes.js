@@ -94,7 +94,11 @@ export default new vueRouter({
     {
       path: '/user/dashboard',
       name: 'userDashboard',
-      component: userDashboard,
+      components: {
+        header: AppHeader,
+        default: userDashboard,
+        footer: AppFooter
+      },
       meta: {
         auth: true
       }

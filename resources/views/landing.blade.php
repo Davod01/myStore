@@ -7,12 +7,10 @@
         <meta name="csrf-token" content="{{csrf_token()}}">
         <title>Big Store</title>
         <link href=" {{ asset('css/myStyle.css') }}" rel="stylesheet">
-        <link href=" {{ asset('css/all.css') }}" rel="stylesheet">
     </head>
     <body>
         <div id="app">
         </div>
         <script src="{{ asset('js/app.js') }}"></script>
-        <script src="{{ asset('js/all.js') }}"></script>
     </body>
     </html>

@@ -3126,53 +3126,41 @@ __webpack_require__.r(__webpack_exports__);
       type: Number,
       required: false,
       "default": 3
-    },
-    totalPages: {
-      type: Number,
-      required: true
-    },
-    total: {
-      type: Number,
-      required: true
-    },
-    currentPage: {
-      type: Number,
-      required: true
     }
   },
   computed: {
     Pages: function Pages() {
       var range = [];
 
-      if (this.currentPage > 1) {
+      if (this.$store.getters.getShopCurrentPage > 1) {
         range.push({
-          name: this.currentPage - 1,
+          name: this.$store.getters.getShopCurrentPage - 1,
           isDisabled: 'enable-paginate-page'
         });
       }
 
-      for (var i = this.currentPage; i <= this.maxVisibleButtons + this.currentPage; i++) {
-        if (i > this.totalPages) {
+      for (var i = this.$store.getters.getShopCurrentPage; i <= this.maxVisibleButtons + this.$store.getters.getShopCurrentPage; i++) {
+        if (i > this.$store.getters.getNumberOfPageLength) {
           break;
         }
 
         range.push({
           name: i,
-          isDisabled: i === this.currentPage ? 'disable-paginate-page' : 'enable-paginate-page'
+          isDisabled: i === this.$store.getters.getShopCurrentPage ? 'disable-paginate-page' : 'enable-paginate-page'
         });
       }
 
       return range;
     },
     showPrev: function showPrev() {
-      if (this.currentPage === 1) {
+      if (this.$store.getters.getShopCurrentPage === 1) {
         return false;
       }
 
       return true;
     },
     showNext: function showNext() {
-      if (this.currentPage === this.totalPages) {
+      if (this.$store.getters.getShopCurrentPage === this.$store.getters.getNumberOfPageLength) {
         return false;
       }
 
@@ -3533,6 +3521,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 var myNav = document.getElementsByClassName('nav');
 
 
@@ -3545,6 +3537,8 @@ var myNav = document.getElementsByClassName('nav');
   data: function data() {
     return {
       cartModal: false,
+      search_button: true,
+      SearchValue: '',
       routes: {
         // UNLOGGED
         unlogged: [{
@@ -3582,6 +3576,12 @@ var myNav = document.getElementsByClassName('nav');
     },
     toggleCartModal: function toggleCartModal(value) {
       this.cumpCartModal = !value;
+    },
+    searchForProduct: function searchForProduct() {
+      if (this.SearchValue.length > 2) {
+        this.$store.commit('searchInProducts', this.SearchValue);
+        console.log(this.$store.getters.getFilteredProduct);
+      }
     }
   },
   computed: {
@@ -3836,6 +3836,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -3846,8 +3848,6 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
-      Products: [],
-      filteredProduct: [],
       filterThis: [],
       filters: [{
         id: 0,
@@ -3890,42 +3890,28 @@ __webpack_require__.r(__webpack_exports__);
           isFiltered: false
         }]
       }],
-      per_page: 24,
-      currentPage: 1,
       sortedBy: 'new'
     };
   },
   methods: {
     changePage: function changePage(value) {
-      this.currentPage = value;
+      this.$store.commit('setCurrentPage', value);
     },
     prevPage: function prevPage() {
-      if (this.currentPage > 1) {
-        this.currentPage--;
+      if (this.$store.getters.getShopCurrentPage > 1) {
+        this.$store.commit('prevPage');
       }
     },
     nextPage: function nextPage() {
-      if (this.currentPage < this.totalPage) {
-        this.currentPage++;
+      if (this.$store.getters.getShopCurrentPage < this.$store.getters.getNumberOfPageLength) {
+        this.$store.commit('nextPage');
       }
-    },
-    matchesFilter: function matchesFilter(item) {
-      var count = 0;
-
-      for (var n = 0; n < this.filterThis.length; n++) {
-        if (this.filterThis[n].items.indexOf(item[this.filterThis[n].fieldName]) > -1) {
-          count++;
-        }
-      } // If TRUE, then the current item in the array meets all the filter criteria
-
-
-      return count == this.filterThis.length;
     },
     modifyFilter: function modifyFilter(objValue) {
       var _this = this;
 
       this.filterThis = [];
-      this.filteredProduct = [];
+      this.$store.commit('setFilteredProductNone');
       objValue.isFiltered = !objValue.isFiltered;
 
       for (var i = 0; i < this.filters.length; i++) {
@@ -3948,33 +3934,37 @@ __webpack_require__.r(__webpack_exports__);
 
       this.Products.forEach(function (product) {
         if (_this.matchesFilter(product)) {
-          _this.filteredProduct.push(product);
+          _this.$store.commit('pushIntoFilteredProduct', product);
         }
       });
+      this.changePage(1);
+    },
+    matchesFilter: function matchesFilter(item) {
+      var count = 0;
+
+      for (var n = 0; n < this.filterThis.length; n++) {
+        if (this.filterThis[n].items.indexOf(item[this.filterThis[n].fieldName]) > -1) {
+          count++;
+        }
+      } // If TRUE, then the current item in the array meets all the filter criteria
+
+
+      return count == this.filterThis.length;
     }
   },
   created: function created() {
-    var _this2 = this;
-
-    axios.get('/api/shop').then(function (x) {
-      _this2.Products = x.data;
-      _this2.filteredProduct = _this2.Products;
-    })["catch"](function (err) {
-      alert(err.message);
-    });
+    this.$store.commit('setMyProducts');
   },
   computed: {
-    pageCount: function pageCount() {
-      return this.filteredProduct.length;
-    },
-    totalPage: function totalPage() {
-      return Math.ceil(this.pageCount / this.per_page);
-    },
     Pagination: function Pagination() {
-      return this.filteredProduct.slice(this.currentPage * this.per_page - this.per_page, this.currentPage * this.per_page);
+      this.$store.commit('setPagination');
+      return this.$store.getters.getPagination;
     },
     filtered: function filtered() {
       return this.filters;
+    },
+    Products: function Products() {
+      return this.$store.getters.getMyProducts;
     }
   },
   watch: {
@@ -4110,7 +4100,21 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-/* harmony default export */ __webpack_exports__["default"] = ({});
+/* harmony default export */ __webpack_exports__["default"] = ({
+  "return": {
+    registerdOeder: {
+      orderId: 0,
+      delivered: false,
+      productList: {
+        'PName': '',
+        'PUnit': '',
+        'Pprice': '',
+        'PImage': ''
+      }
+    }
+  },
+  mounted: {}
+});
 
 /***/ }),
 
@@ -8666,7 +8670,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.header{\n    border-bottom: 1px solid rgba(0, 0, 0, 0.2);\n    display: flex;\n    flex-direction: row;\n    justify-content: flex-start;\n    align-items: center;\n    padding: 1rem 0 1rem 0;\n    margin: 1rem;\n}\n.header-first-child {\n    display: flex;\n    flex-direction: row;\n    justify-content: flex-start;\n    flex-grow: 1;\n}\n.header-second-child {\n    display: flex;\n    flex-direction: row;\n    justify-content: flex-end;\n    align-items: center;\n    flex-grow: 1;\n}\n.logo{\n    font-size: 2rem;\n    font-weight: bold;\n}\n.nav {\n    margin: auto;\n}\n.show-nav{\n    display: none;\n}\n.nav-close {\n    display: none;\n    font-size: 2rem;\n    padding: 0.5rem;\n}\n.nav ul{\n  display: flex;\n  flex-direction: row;\n  justify-content: flex-start;\n  align-items: center;\n  margin-bottom: 0;\n  font-size: 1.4rem;\n}\n.nav  ul li{\n    margin: 0 1.4rem 0 0;\n}\n.search-bar {\n    flex-grow: 2;\n}\n.search-bar input[type=text]{\n    border-top-right-radius: 45px;\n    border-bottom-right-radius: 45px;\n    background: #fff none repeat scroll 0 0;\n    border: solid 1px #ddd;\n    outline: medium none;\n    font-size: 1rem;\n    padding: 0.5rem 2rem;\n}\n.search-bar button{\n    background-color: #f1ac06;\n    border: medium none;\n    border-radius: 40px 0 0 40px;\n    color: #fff;\n    font-size: 1rem;\n    padding: 0.6rem 0.8rem;\n    margin-right: -5px;\n}\n.user {\n    position: relative;\n    flex-grow: 1;\n    display: inline-block;\n    justify-content: center;\n}\n.user-plate {\n    display: none;\n    position: absolute;\n    width:100px;\n    height: 90px;\n    top: 46px;\n    left: 15px;\n    background: #fafafa;\n}\n.user:hover .user-plate {\n    display: flex;\n}\n.user-plate::before {\n    content: '';\n    position: absolute;\n    width: 100px;\n    height: 30px;\n    top: -30px;\n}\n.user-plate ul {\n    display: flex;\n    flex-direction: column;\n}\n.user-plate ul li {\n    list-style: none;\n    padding: 10px 10px 10px 20px;\n    font-weight: 50;\n    position: relative;\n}\n.user-plate ul li::before {\n    content: '';\n    position: absolute;\n    right: 5px;\n    bottom: 5px;\n    height: 2px;\n    width: 0px;\n    background-color: red;\n    transition: all 0.5s;\n    opacity: 0.5;\n}\n.user-plate ul li:hover::before {\n    width: 90px;\n}\n.logo{\n    margin:0 2rem 0 2rem;\n}\n.cart {\n    flex-grow: 1;\n}\n.header-child {\n    flex-grow: 1;\n    display: flex;\n    flex-direction: row;\n}\n@media screen and (max-width: 798px) and (min-width: 498px)  {\n.header{\n    flex-direction: column;\n}\n.header-first-child {\n    margin: 1rem 0;\n    align-items: center;\n    width: 100%;\n}\n.header-second-child {\n    width: 100%;\n}\n.nav{\n    display: flex;\n    flex-direction: column;\n    position: absolute;\n    background-color: #fff;\n    top:0;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    opacity: 0;\n    visibility: hidden;\n    transition: visibility 0s, opacity 0.5s linear;\n    -webkit-transition: visibility 0s, opacity 0.5s linear;\n}\n.nav-close {\n    display: block;\n    float: right;\n}\n.nav ul {\n    flex-direction: column;\n}\n.nav ul li{\n    margin: 1.5rem auto;\n}\n.show-nav{\n    display: flex;\n    flex-direction: row;\n    justify-content: flex-start;\n    margin: 0 1rem;\n    flex-grow: 1;\n    font-size: 1.5rem;\n}\n.logo{\n    margin: 0 1rem;\n    flex-grow: 1;\n}\n.search-bar {\n    flex-grow: 1;\n}\n.search-bar input[type=text]{\n    padding: 0.5rem 1rem;\n}\n}\n@media screen and (max-width: 497px) {\n.header{\n    flex-direction: column;\n}\n.header-first-child {\n    margin: 1rem 0;\n    align-items: center;\n    width: 100%;\n}\n.header-second-child {\n    width: 100%;\n}\n.nav{\n    display: flex;\n    flex-direction: column;\n    position: absolute;\n    background-color: #fff;\n    top:0;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    opacity: 0;\n    visibility: hidden;\n    transition: visibility 0s, opacity 0.5s linear;\n    -webkit-transition: visibility 0s, opacity 0.5s linear;\n}\n.nav-close {\n    display: block;\n    float: right;\n}\n.nav ul {\n    flex-direction: column;\n}\n.nav ul li{\n    margin: 1.5rem auto;\n}\n.show-nav{\n    display: flex;\n    flex-direction: row;\n    justify-content: flex-start;\n    margin: 0 1rem;\n    flex-grow: 1;\n    font-size: 1.5rem;\n}\n.logo{\n    margin: 0 1rem;\n    flex-grow: 1;\n}\n.search-bar {\n    flex-grow: 1;\n}\n.search-bar input[type=text]{\n    padding: 0.5rem 1rem;\n}\n}\n\n", ""]);
+exports.push([module.i, "\n.header{\n    border-bottom: 1px solid rgba(0, 0, 0, 0.2);\n    display: flex;\n    flex-direction: row;\n    justify-content: flex-start;\n    align-items: center;\n    padding: 1rem 0 1rem 0;\n    margin: 1rem;\n}\n.header-first-child {\n    display: flex;\n    flex-direction: row;\n    justify-content: flex-start;\n    flex-grow: 1;\n}\n.header-second-child {\n    display: flex;\n    flex-direction: row;\n    justify-content: flex-end;\n    align-items: center;\n    flex-grow: 1;\n}\n.logo{\n    font-size: 2rem;\n    font-weight: bold;\n}\n.nav {\n    margin: auto;\n}\n.show-nav{\n    display: none;\n}\n.nav-close {\n    display: none;\n    font-size: 2rem;\n    padding: 0.5rem;\n}\n.nav ul{\n  display: flex;\n  flex-direction: row;\n  justify-content: flex-start;\n  align-items: center;\n  margin-bottom: 0;\n  font-size: 1.4rem;\n}\n.nav  ul li{\n    margin: 0 1.4rem 0 0;\n}\n.search-bar {\n    flex-grow: 2;\n}\n.search-bar input[type=text]{\n    border-top-right-radius: 45px;\n    border-bottom-right-radius: 45px;\n    background: #fff none repeat scroll 0 0;\n    border: solid 1px #ddd;\n    outline: medium none;\n    font-size: 1rem;\n    padding: 0.5rem 2rem;\n}\n.search-bar button{\n    background-color: #f1ac06;\n    border: medium none;\n    border-radius: 40px 0 0 40px;\n    color: #fff;\n    font-size: 1rem;\n    padding: 0.6rem 0.8rem;\n    margin-right: -5px;\n}\n.user {\n    position: relative;\n    padding: 0 0.6rem;\n}\n.user-plate {\n    display: none;\n    position: absolute;\n    width:100px;\n    height: 90px;\n    top: 46px;\n    left: 0px;\n    background: #fafafa;\n}\n.user:hover .user-plate {\n    display: flex;\n}\n.user-plate::before {\n    content: '';\n    position: absolute;\n    width: 100px;\n    height: 30px;\n    top: -30px;\n}\n.user-plate ul {\n    display: flex;\n    flex-direction: column;\n}\n.user-plate ul li {\n    list-style: none;\n    padding: 10px 10px 10px 20px;\n    font-weight: 50;\n    position: relative;\n}\n.user-plate ul li::before {\n    content: '';\n    position: absolute;\n    right: 5px;\n    bottom: 5px;\n    height: 2px;\n    width: 0px;\n    background-color: red;\n    transition: all 0.5s;\n    opacity: 0.5;\n}\n.user-plate ul li:hover::before {\n    width: 90px;\n}\n.logo{\n    margin:0 2rem 0 2rem;\n}\n.cart {\n    padding: 0 0.6rem;\n}\n.header-child {\n    flex-grow: 1;\n    display: flex;\n    flex-direction: row;\n    align-items: baseline;\n    justify-content: space-between;\n}\n@media screen and (max-width: 798px) and (min-width: 498px)  {\n.header{\n    flex-direction: column;\n}\n.header-first-child {\n    margin: 1rem 0;\n    align-items: center;\n    width: 100%;\n}\n.header-second-child {\n    width: 100%;\n}\n.nav{\n    display: flex;\n    flex-direction: column;\n    position: absolute;\n    background-color: #fff;\n    top:0;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    opacity: 0;\n    visibility: hidden;\n    transition: visibility 0s, opacity 0.5s linear;\n    -webkit-transition: visibility 0s, opacity 0.5s linear;\n}\n.nav-close {\n    display: block;\n    float: right;\n}\n.nav ul {\n    flex-direction: column;\n}\n.nav ul li{\n    margin: 1.5rem auto;\n}\n.show-nav{\n    display: flex;\n    flex-direction: row;\n    justify-content: flex-start;\n    margin: 0 1rem;\n    flex-grow: 1;\n    font-size: 1.5rem;\n}\n.logo{\n    margin: 0 1rem;\n    flex-grow: 1;\n}\n.search-bar {\n    flex-grow: 1;\n}\n.search-bar input[type=text]{\n    padding: 0.5rem 1rem;\n}\n}\n@media screen and (max-width: 497px) {\n.header{\n    flex-direction: column;\n}\n.header-first-child {\n    margin: 1rem 0;\n    align-items: center;\n    width: 100%;\n}\n.header-second-child {\n    width: 100%;\n}\n.nav{\n    display: flex;\n    flex-direction: column;\n    position: absolute;\n    background-color: #fff;\n    top:0;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    opacity: 0;\n    visibility: hidden;\n    transition: visibility 0s, opacity 0.5s linear;\n    -webkit-transition: visibility 0s, opacity 0.5s linear;\n}\n.nav-close {\n    display: block;\n    float: right;\n}\n.nav ul {\n    flex-direction: column;\n}\n.nav ul li{\n    margin: 1.5rem auto;\n}\n.show-nav{\n    display: flex;\n    flex-direction: row;\n    justify-content: flex-start;\n    margin: 0 1rem;\n    flex-grow: 1;\n    font-size: 1.5rem;\n}\n.logo{\n    margin: 0 1rem;\n    flex-grow: 1;\n}\n.search-bar {\n    flex-grow: 1;\n}\n.search-bar input[type=text]{\n    padding: 0.5rem 1rem;\n}\n}\n\n", ""]);
 
 // exports
 
@@ -8685,7 +8689,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n*, *::before, *::after{\n  margin:0;\n  padding:0;\n  box-sizing: border-box;\n}\nbody {\n  width: 100%;\n  font-size: 18px;\n  direction: rtl;\n}\na {\n  color: black;\n  text-decoration: none;\n}\na:hover {\n  color: black;\n  text-decoration: none;\n}\nul{\n  list-style: none;\n}\n.my-inline-block{\n  display: inline-block;\n}\n@media screen and (max-width: 798px) and (min-width: 498px) {\n.container {\n    margin: 0 2.5rem;\n}\n.product-image {\n    text-align: center;\n}\n}\n@media screen and (max-width: 497px) {\nbody {\n    font-size: 12px;\n}\n.container {\n    margin: 0 1.5rem;\n}\n}\n\n\n/*\nmy definition\n*/\n.color-red{\n  color: red;\n}\n.color-green{\n  color: green;\n}\n.display-inline-block {\n  display: inline-block;\n}\n\n\n/* ----------------------------------------------\n * Generated by Animista on 2019-9-25 21:8:44\n * Licensed under FreeBSD License.\n * See http://animista.net/license for more info. \n * w: http://animista.net, t: @cssanimista\n * ---------------------------------------------- */\n\n/**\n * ----------------------------------------\n * animation focus-in-expand-fwd\n * ----------------------------------------\n */\n@-webkit-keyframes focus-in-expand-fwd {\n0% {\n    letter-spacing: -0.5em;\n    -webkit-transform: translateZ(-800px);\n            transform: translateZ(-800px);\n    -webkit-filter: blur(12px);\n            filter: blur(12px);\n    opacity: 0;\n}\n100% {\n    -webkit-transform: translateZ(0);\n            transform: translateZ(0);\n    -webkit-filter: blur(0);\n            filter: blur(0);\n    opacity: 1;\n}\n}\n@keyframes focus-in-expand-fwd {\n0% {\n    letter-spacing: -0.5em;\n    -webkit-transform: translateZ(-800px);\n            transform: translateZ(-800px);\n    -webkit-filter: blur(12px);\n            filter: blur(12px);\n    opacity: 0;\n}\n100% {\n    -webkit-transform: translateZ(0);\n            transform: translateZ(0);\n    -webkit-filter: blur(0);\n            filter: blur(0);\n    opacity: 1;\n}\n}\n\n\n/* ----------------------------------------------\n * Generated by Animista on 2019-9-25 22:6:30\n * Licensed under FreeBSD License.\n * See http://animista.net/license for more info. \n * w: http://animista.net, t: @cssanimista\n * ---------------------------------------------- */\n\n/**\n * ----------------------------------------\n * animation roll-in-blurred-bottom\n * ----------------------------------------\n */\n@-webkit-keyframes roll-in-blurred-bottom {\n0% {\n    -webkit-transform: translateY(800px) rotate(720deg);\n            transform: translateY(800px) rotate(720deg);\n    -webkit-filter: blur(50px);\n            filter: blur(50px);\n    opacity: 0;\n}\n100% {\n    -webkit-transform: translateY(0) rotate(0deg);\n            transform: translateY(0) rotate(0deg);\n    opacity: 1;\n}\n}\n@keyframes roll-in-blurred-bottom {\n0% {\n    -webkit-transform: translateY(800px) rotate(720deg);\n            transform: translateY(800px) rotate(720deg);\n    -webkit-filter: blur(50px);\n            filter: blur(50px);\n    opacity: 0;\n}\n100% {\n    -webkit-transform: translateY(0) rotate(0deg);\n            transform: translateY(0) rotate(0deg);\n    opacity: 1;\n}\n}\n\n\n", ""]);
+exports.push([module.i, "\n*, *::before, *::after{\n  margin:0;\n  padding:0;\n  box-sizing: border-box;\n}\nbody {\n  width: 100%;\n  font-size: 18px;\n  direction: rtl;\n}\n#app {\n  display: flex;\n  width: 100%;\n  flex-direction: column;\n  height: 100vh;\n}\n#MainClass {\n  flex-grow: 1;\n}\na {\n  color: black;\n  text-decoration: none;\n}\na:hover {\n  color: black;\n  text-decoration: none;\n}\nul{\n  list-style: none;\n}\n.my-inline-block{\n  display: inline-block;\n}\n.icon-size{\n  width: 0.8rem;\n  height: 0.8rem;\n}\n.icon-size-2{\n  width: 1.2rem;\n  height: 1.2rem;\n}\n@media screen and (max-width: 798px) and (min-width: 498px) {\n.container {\n    margin: 0 2.5rem;\n}\n.product-image {\n    text-align: center;\n}\n}\n@media screen and (max-width: 497px) {\nbody {\n    font-size: 12px;\n}\n.container {\n    margin: 0 1.5rem;\n}\n}\n\n\n/*\nmy definition\n*/\n.color-red{\n  color: red;\n}\n.color-green{\n  color: green;\n}\n.display-inline-block {\n  display: inline-block;\n}\n\n\n/* ----------------------------------------------\n * Generated by Animista on 2019-9-25 21:8:44\n * Licensed under FreeBSD License.\n * See http://animista.net/license for more info. \n * w: http://animista.net, t: @cssanimista\n * ---------------------------------------------- */\n\n/**\n * ----------------------------------------\n * animation focus-in-expand-fwd\n * ----------------------------------------\n */\n@-webkit-keyframes focus-in-expand-fwd {\n0% {\n    letter-spacing: -0.5em;\n    -webkit-transform: translateZ(-800px);\n            transform: translateZ(-800px);\n    -webkit-filter: blur(12px);\n            filter: blur(12px);\n    opacity: 0;\n}\n100% {\n    -webkit-transform: translateZ(0);\n            transform: translateZ(0);\n    -webkit-filter: blur(0);\n            filter: blur(0);\n    opacity: 1;\n}\n}\n@keyframes focus-in-expand-fwd {\n0% {\n    letter-spacing: -0.5em;\n    -webkit-transform: translateZ(-800px);\n            transform: translateZ(-800px);\n    -webkit-filter: blur(12px);\n            filter: blur(12px);\n    opacity: 0;\n}\n100% {\n    -webkit-transform: translateZ(0);\n            transform: translateZ(0);\n    -webkit-filter: blur(0);\n            filter: blur(0);\n    opacity: 1;\n}\n}\n\n\n/* ----------------------------------------------\n * Generated by Animista on 2019-9-25 22:6:30\n * Licensed under FreeBSD License.\n * See http://animista.net/license for more info. \n * w: http://animista.net, t: @cssanimista\n * ---------------------------------------------- */\n\n/**\n * ----------------------------------------\n * animation roll-in-blurred-bottom\n * ----------------------------------------\n */\n@-webkit-keyframes roll-in-blurred-bottom {\n0% {\n    -webkit-transform: translateY(800px) rotate(720deg);\n            transform: translateY(800px) rotate(720deg);\n    -webkit-filter: blur(50px);\n            filter: blur(50px);\n    opacity: 0;\n}\n100% {\n    -webkit-transform: translateY(0) rotate(0deg);\n            transform: translateY(0) rotate(0deg);\n    opacity: 1;\n}\n}\n@keyframes roll-in-blurred-bottom {\n0% {\n    -webkit-transform: translateY(800px) rotate(720deg);\n            transform: translateY(800px) rotate(720deg);\n    -webkit-filter: blur(50px);\n            filter: blur(50px);\n    opacity: 0;\n}\n100% {\n    -webkit-transform: translateY(0) rotate(0deg);\n            transform: translateY(0) rotate(0deg);\n    opacity: 1;\n}\n}\n\n\n", ""]);
 
 // exports
 
@@ -23975,7 +23979,7 @@ var render = function() {
       _c("div", { staticClass: "header" }, [
         _c("div", { staticClass: "header-first-child" }, [
           _c("div", { staticClass: "show-nav", on: { click: _vm.ShowNav } }, [
-            _c("i", { staticClass: "fas fa-align-justify" })
+            _c("img", { attrs: { src: "svg/menu.svg", alt: "navbar" } })
           ]),
           _vm._v(" "),
           _c("div", { staticClass: "logo" }, [_vm._v("مارکت ایرانی")]),
@@ -24018,11 +24022,83 @@ var render = function() {
         ]),
         _vm._v(" "),
         _c("div", { staticClass: "header-second-child" }, [
-          _vm._m(0),
+          _c(
+            "div",
+            { staticClass: "search-bar" },
+            [
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.SearchValue,
+                    expression: "SearchValue"
+                  }
+                ],
+                attrs: {
+                  type: "text",
+                  placeholder: "جست و جو",
+                  maxlength: "30"
+                },
+                domProps: { value: _vm.SearchValue },
+                on: {
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.SearchValue = $event.target.value
+                  }
+                }
+              }),
+              _vm._v(" "),
+              _c("transition", { attrs: { name: "serachButtonChange" } }, [
+                _vm.search_button
+                  ? _c(
+                      "button",
+                      {
+                        on: {
+                          click: function($event) {
+                            return _vm.searchForProduct()
+                          }
+                        }
+                      },
+                      [
+                        _c("img", {
+                          staticClass: "icon-size",
+                          attrs: { src: "svg/search.svg", alt: "navbar" }
+                        })
+                      ]
+                    )
+                  : _vm._e()
+              ])
+            ],
+            1
+          ),
           _vm._v(" "),
           _c("div", { staticClass: "header-child" }, [
+            _c(
+              "div",
+              {
+                staticClass: "cart",
+                on: {
+                  click: function($event) {
+                    _vm.cumpCartModal = !_vm.cumpCartModal
+                  }
+                }
+              },
+              [
+                _c("img", {
+                  staticClass: "icon-size-2",
+                  attrs: { src: "svg/shopping-cart.svg", alt: "cart" }
+                })
+              ]
+            ),
+            _vm._v(" "),
             _c("div", { staticClass: "user" }, [
-              _c("i", { staticClass: "fas fa-user" }),
+              _c("img", {
+                staticClass: "icon-size-2",
+                attrs: { src: "svg/user.svg", alt: "cart" }
+              }),
               _vm._v(" "),
               _c("div", { staticClass: "user-plate" }, [
                 _vm.$auth.check() && _vm.$auth.user().role === 2
@@ -24039,9 +24115,9 @@ var render = function() {
                                 { key: key, attrs: { to: route.path } },
                                 [
                                   _vm._v(
-                                    "\n                      " +
+                                    "\n                    " +
                                       _vm._s(route.name) +
-                                      "\n                  "
+                                      "\n                "
                                   )
                                 ]
                               )
@@ -24082,9 +24158,9 @@ var render = function() {
                                 { key: key, attrs: { to: route.path } },
                                 [
                                   _vm._v(
-                                    "\n                      " +
+                                    "\n                    " +
                                       _vm._s(route.name) +
-                                      "\n                  "
+                                      "\n                "
                                   )
                                 ]
                               )
@@ -24123,9 +24199,9 @@ var render = function() {
                               { key: key, attrs: { to: route.path } },
                               [
                                 _vm._v(
-                                  "\n                      " +
+                                  "\n                    " +
                                     _vm._s(route.name) +
-                                    "\n                  "
+                                    "\n                "
                                 )
                               ]
                             )
@@ -24136,20 +24212,7 @@ var render = function() {
                       0
                     )
               ])
-            ]),
-            _vm._v(" "),
-            _c(
-              "div",
-              {
-                staticClass: "cart",
-                on: {
-                  click: function($event) {
-                    _vm.cumpCartModal = !_vm.cumpCartModal
-                  }
-                }
-              },
-              [_c("i", { staticClass: "fas fa-cart" })]
-            )
+            ])
           ])
         ])
       ]),
@@ -24159,25 +24222,7 @@ var render = function() {
     1
   )
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "search-bar" }, [
-      _c("input", {
-        attrs: {
-          type: "text",
-          placeholder: "جست و جو",
-          maxlength: "30",
-          minlength: "3"
-        }
-      }),
-      _vm._v(" "),
-      _c("button", [_c("i", { staticClass: "fas fa-search" })])
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -24205,7 +24250,7 @@ var render = function() {
     [
       _c("router-view", { attrs: { name: "header" } }),
       _vm._v(" "),
-      _c("main", [
+      _c("main", { attrs: { id: "MainClass" } }, [
         _c("div", { staticClass: "container" }, [_c("router-view")], 1)
       ]),
       _vm._v(" "),
@@ -24626,11 +24671,6 @@ var render = function() {
         { staticClass: "pagination" },
         [
           _c("paginationComponent", {
-            attrs: {
-              totalPages: _vm.totalPage,
-              total: _vm.pageCount,
-              currentPage: _vm.currentPage
-            },
             on: {
               clickPage: _vm.changePage,
               prevPage: _vm.prevPage,
@@ -41653,7 +41693,11 @@ __webpack_require__.r(__webpack_exports__);
   {
     path: '/user/dashboard',
     name: 'userDashboard',
-    component: _views_userDasboard_vue__WEBPACK_IMPORTED_MODULE_4__["default"],
+    components: {
+      header: _components_navbar_vue__WEBPACK_IMPORTED_MODULE_8__["default"],
+      "default": _views_userDasboard_vue__WEBPACK_IMPORTED_MODULE_4__["default"],
+      footer: _components_footer_vue__WEBPACK_IMPORTED_MODULE_9__["default"]
+    },
     meta: {
       auth: true
     }
@@ -41689,9 +41733,19 @@ __webpack_require__.r(__webpack_exports__);
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vuex__WEBPACK_IMPORTED_MODULE_1__["default"]);
 /* harmony default export */ __webpack_exports__["default"] = (new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
   state: {
-    ordersList: []
+    myProducts: [],
+    ordersList: [],
+    filteredProduct: [],
+    shopPagination: 1,
+    shopCurentPage: 1,
+    numberOfProductDisplayed: 24
   },
   mutations: {
+    /*
+    *************************************
+    *************** Orders***************
+    *************************************
+    */
     addTo_OrdersList: function addTo_OrdersList(state, value) {
       var itemExist = false;
 
@@ -41717,16 +41771,73 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vuex__WEBPACK_IMPORTED_MODULE_1__
     set_orderList: function set_orderList(state, value) {
       state.ordersList = JSON.parse(value);
     },
+    reset_orderList: function reset_orderList(state) {
+      state.ordersList = [];
+      vue__WEBPACK_IMPORTED_MODULE_0___default.a.$cookies.remove('cart');
+    },
     remove_Product: function remove_Product(state, value) {
       state.ordersList.splice(state.ordersList.indexOf(value), 1);
       vue__WEBPACK_IMPORTED_MODULE_0___default.a.$cookies.set('cart', JSON.stringify(state.ordersList));
     },
-    reset_orderList: function reset_orderList(state) {
-      state.ordersList = [];
-      vue__WEBPACK_IMPORTED_MODULE_0___default.a.$cookies.remove('cart');
+
+    /*
+    *************************************
+    *************** MyProducts***************
+    *************************************
+    */
+    setMyProducts: function setMyProducts(state) {
+      axios.get('/api/shop').then(function (x) {
+        state.myProducts = x.data;
+        state.filteredProduct = x.data;
+      })["catch"](function (err) {
+        alert(err.message);
+      });
+    },
+    setFilteredProduct: function setFilteredProduct(state) {
+      state.filteredProduct = state.myProducts;
+    },
+    setFilteredProductNone: function setFilteredProductNone(state) {
+      state.filteredProduct = [];
+    },
+    pushIntoFilteredProduct: function pushIntoFilteredProduct(state, value) {
+      state.filteredProduct.push(value);
+    },
+    searchInProducts: function searchInProducts(state, value) {
+      var name = '';
+      state.filteredProduct = [];
+      state.myProducts.forEach(function (x) {
+        name = x.name.toLowerCase();
+
+        if (name.indexOf(value.toLowerCase()) > -1) {
+          state.filteredProduct.push(x);
+        }
+      });
+    },
+
+    /*
+    *************************************
+    *************** pagination***************
+    *************************************
+    */
+    setPagination: function setPagination(state) {
+      state.shopPagination = state.filteredProduct.slice(state.shopCurentPage * state.numberOfProductDisplayed - state.numberOfProductDisplayed, state.shopCurentPage * state.numberOfProductDisplayed);
+    },
+    setCurrentPage: function setCurrentPage(state, value) {
+      state.shopCurentPage = value;
+    },
+    prevPage: function prevPage(state) {
+      state.shopCurentPage--;
+    },
+    nextPage: function nextPage(state) {
+      state.shopCurentPage++;
     }
   },
   getters: {
+    /*
+    *************************************
+    *************** Orders***************
+    *************************************
+    */
     getOrderTotalPrice: function getOrderTotalPrice(state) {
       var data = 0;
       state.ordersList.forEach(function (x) {
@@ -41740,6 +41851,30 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vuex__WEBPACK_IMPORTED_MODULE_1__
         data.push([x.id, x.number]);
       });
       return data;
+    },
+
+    /*
+    *************************************
+    *************** MyProducts***************
+    *************************************
+    */
+    getMyProducts: function getMyProducts(state) {
+      return state.myProducts;
+    },
+    getFilteredProduct: function getFilteredProduct(state) {
+      return state.filteredProduct;
+    },
+    getPagination: function getPagination(state) {
+      return state.shopPagination;
+    },
+    getProductLength: function getProductLength(state) {
+      return state.filteredProduct.length;
+    },
+    getNumberOfPageLength: function getNumberOfPageLength(state) {
+      return Math.ceil(state.filteredProduct.length / state.numberOfProductDisplayed);
+    },
+    getShopCurrentPage: function getShopCurrentPage(state) {
+      return state.shopCurentPage;
     }
   }
 }));

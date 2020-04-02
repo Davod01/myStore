@@ -14,49 +14,37 @@ export default {
       type: Number,
       required: false,
       default: 3
-    },
-    totalPages: {
-      type: Number,
-      required: true
-    },
-    total: {
-      type: Number,
-      required: true
-    },
-    currentPage: {
-      type: Number,
-      required: true
     }
   },
   computed: {
     Pages () {
       var range = [];
-      if (this.currentPage > 1) {
+      if (this.$store.getters.getShopCurrentPage> 1) {
         range.push({
-          name: this.currentPage - 1,
+          name: this.$store.getters.getShopCurrentPage - 1,
           isDisabled: 'enable-paginate-page'
         });
       }
 
-      for (let i = this.currentPage ;i <= (this.maxVisibleButtons + this.currentPage);i++) {
-        if (i > this.totalPages) {
+      for (let i = this.$store.getters.getShopCurrentPage ;i <= (this.maxVisibleButtons + this.$store.getters.getShopCurrentPage);i++) {
+        if (i > this.$store.getters.getNumberOfPageLength) {
           break;
         }
         range.push({
           name: i,
-          isDisabled: i === this.currentPage ? 'disable-paginate-page' : 'enable-paginate-page'
+          isDisabled: i === this.$store.getters.getShopCurrentPage ? 'disable-paginate-page' : 'enable-paginate-page'
         });
       }
       return range;
     },
     showPrev () {
-      if (this.currentPage === 1) {
+      if ( this.$store.getters.getShopCurrentPage === 1) {
         return false;
       }
       return true;
     },
     showNext () {
-      if (this.currentPage === this.totalPages) {
+      if (this.$store.getters.getShopCurrentPage === this.$store.getters.getNumberOfPageLength) {
         return false;
       }
       return true;

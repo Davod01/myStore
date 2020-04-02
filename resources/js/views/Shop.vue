@@ -1,4 +1,5 @@
 <template>
+
   <div class="shop-container">
     <div class="shop-filter">
       <div class="product-category" v-for="(filter,filterIndex) in filtered" v-bind:key="filterIndex">
@@ -13,6 +14,7 @@
         </ul>
       </div>
     </div>
+
     <div class="shop-view">
       <div class="sort">
         <p class="my-inline-block">ترتیب بر اساس</p>
@@ -27,7 +29,7 @@
         <productsComponent v-for="product in Pagination" v-bind:key="product.id" :Product="product"></productsComponent>
       </div>
       <div class="pagination">
-        <paginationComponent @clickPage="changePage" @prevPage="prevPage" @nextPage="nextPage" :totalPages="totalPage" :total="pageCount" :currentPage="currentPage" ></paginationComponent>
+        <paginationComponent @clickPage="changePage" @prevPage="prevPage" @nextPage="nextPage"  ></paginationComponent>
       </div>
     </div>
   </div>
@@ -43,9 +45,7 @@ export default {
     paginationComponent
   },
   data () {
-    return {
-      Products: [],
-      filteredProduct: [],
+    return { 
       filterThis: [],
       filters: [
         {
@@ -99,40 +99,28 @@ export default {
           ]
         }
       ],
-      per_page: 24,
-      currentPage: 1,
       sortedBy:'new'
     }
   },
   methods: {
     changePage (value) {
-      this.currentPage = value;
+      this.$store.commit('setCurrentPage',value);
     },
     prevPage () {
-      if(this.currentPage > 1){
-        this.currentPage--;
+      if ( this.$store.getters.getShopCurrentPage > 1 ) {
+        this.$store.commit('prevPage');
       }
     },
     nextPage () {
-      if(this.currentPage < this.totalPage){
-        this.currentPage++;
+      if ( this.$store.getters.getShopCurrentPage < this.$store.getters.getNumberOfPageLength ) {
+        this.$store.commit('nextPage');
       }
     },
 
-    matchesFilter (item) {
-    let count = 0
-    for (var n = 0; n < this.filterThis.length; n++) {
-      if (this.filterThis[n].items.indexOf(item[this.filterThis[n].fieldName]) > -1) {
-        count++;
-      }
-    }
-    // If TRUE, then the current item in the array meets all the filter criteria
-    return count == this.filterThis.length;
-    },
     
     modifyFilter (objValue) {
       this.filterThis = [];
-      this.filteredProduct = [];
+      this.$store.commit('setFilteredProductNone');
       objValue.isFiltered = !objValue.isFiltered;
       
       for (let i=0;i < this.filters.length;i++){
@@ -154,36 +142,42 @@ export default {
 
       this.Products.forEach(product => {
         if (this.matchesFilter(product)){
-          this.filteredProduct.push(product);
+          this.$store.commit('pushIntoFilteredProduct',product);
         }
       });
+      this.changePage(1);
 
+    },
+
+    matchesFilter (item) {
+    let count = 0
+    for (var n = 0; n < this.filterThis.length; n++) {
+      if (this.filterThis[n].items.indexOf(item[this.filterThis[n].fieldName]) > -1) {
+        count++;
+      }
     }
+    // If TRUE, then the current item in the array meets all the filter criteria
+    return count == this.filterThis.length;
+    },
 
   },
+
+
   created () {
-      axios.get('/api/shop').then (x => {
-        this.Products = x.data;
-        this.filteredProduct = this.Products;
-      })
-      .catch(err => {
-        alert(err.message)
-      })
+    this.$store.commit('setMyProducts');
   },
   
   computed: {
-    pageCount () {
-      return this.filteredProduct.length;
-    },
-    totalPage () {
-      return Math.ceil(this.pageCount / this.per_page);
-    },
     Pagination () {
-      return this.filteredProduct.slice((this.currentPage * this.per_page) - this.per_page ,this.currentPage * this.per_page);
+      this.$store.commit('setPagination');
+      return this.$store.getters.getPagination;
     },
 
     filtered () {
       return this.filters;
+    },
+    Products () {
+      return this.$store.getters.getMyProducts;
     }
   },
   watch: {
