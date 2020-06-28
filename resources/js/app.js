@@ -11,6 +11,7 @@ import Store from './store'
 import VueCookies from 'vue-cookies'
 
 
+
 window.Vue = Vue
 // Set Vue router
 Vue.router = router
