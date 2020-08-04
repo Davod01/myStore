@@ -13,28 +13,28 @@ const config = {
   
   // API endpoints used in Vue Auth.
   registerData: {
-    url: 'api/auth/register', 
+    url: '/api/auth/register', 
     method: 'POST'
   },
   loginData: {
-    url: 'api/auth/login', 
+    url: '/api/auth/login', 
     method: 'POST', 
     redirect: '/', 
     fetchUser: true
   },
   logoutData: {
-    url: 'api/auth/logout', 
+    url: '/api/auth/logout', 
     method: 'POST', 
     redirect: '/', 
     makeRequest: true
   },
   fetchData: {
-    url: 'api/auth/user', 
+    url: '/api/auth/user', 
     method: 'GET', 
     enabled: true
   },
   refreshData: {
-    url: 'api/auth/refresh', 
+    url: '/api/auth/refresh', 
     method: 'GET', 
     enabled: true, 
     interval: 30

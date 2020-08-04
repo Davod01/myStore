@@ -60,7 +60,8 @@ export default {
   },
   data () {
     return {
-      address: ''
+      address: '',
+      
     }
   },
   computed: {

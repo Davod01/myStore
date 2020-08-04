@@ -102,6 +102,7 @@ export default {
       sortedBy:'new'
     }
   },
+  
   methods: {
     changePage (value) {
       this.$store.commit('setCurrentPage',value);
@@ -182,23 +183,7 @@ export default {
   },
   watch: {
     sortedBy:function(val) {
-      switch(val){
-        case 'new':
-          this.filteredProduct.sort(function(a,b){return a.created_at - b.created_at} );
-          break;
-        case 'old':
-          this.filteredProduct.sort(function(a,b){return b.created_at - a.created_at} );
-          break;
-        case 'highPrice':
-          this.filteredProduct.sort(function(a,b){return b.price - a.price} );
-          break;
-        case 'lowPrice':
-          this.filteredProduct.sort(function(a,b){return a.price - b.price} );
-          break;
-        default:
-          this.filteredProduct.sort(function(a,b){return a.created_at - b.created_at} );
-          break;
-      };
+      this.$store.commit('sortProducts', val)
     }
   }
 }

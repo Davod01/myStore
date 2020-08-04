@@ -8,9 +8,13 @@ export default new Vuex.Store({
       myProducts: [],
       ordersList: [],
       filteredProduct: [],
+      ordersPaginate: [],
+      usersPaginate: [],
+      productsPaginate: [],
       shopPagination: 1,
       shopCurentPage: 1,
       numberOfProductDisplayed: 24,
+      displaySidebar: false,
 
 
   },
@@ -91,6 +95,26 @@ export default new Vuex.Store({
         }
       })
     },
+
+    sortProducts (state , value) {
+      switch(value){
+        case 'new':
+          state.filteredProduct.sort(function(a,b){return a.created_at - b.created_at} );
+          break;
+        case 'old':
+          state.filteredProduct.sort(function(a,b){return b.created_at - a.created_at} );
+          break;
+        case 'highPrice':
+          state.filteredProduct.sort(function(a,b){return b.price - a.price} );
+          break;
+        case 'lowPrice':
+          state.filteredProduct.sort(function(a,b){return a.price - b.price} );
+          break;
+        default:
+          state.filteredProduct.sort(function(a,b){return a.created_at - b.created_at} );
+          break;
+      };
+    },
     /*
     *************************************
     *************** pagination***************
@@ -112,6 +136,54 @@ export default new Vuex.Store({
     nextPage (state) {
       state.shopCurentPage++;
     },
+
+    /*
+    *************************************
+    *************** Sidebar  ***************
+    *************************************
+    */
+
+    toggleDisplaySidebar (state) {
+      state.displaySidebar = !state.displaySidebar;
+    },
+
+    /*
+    *************************************
+    *************** MyProducts***************
+    *************************************
+    */
+    
+   setOrdersPagination (state,value) {
+      axios.get('/api/admin/getOrdersPagination?page=' + value).then (x => {
+        state.ordersPaginate = x.data;
+      })
+      .catch(err => {
+        alert(err.message)
+      })
+    },
+
+    setUsersPagination (state,value) {
+      axios.get('/api/admin/getUsersPagination?page=' + value).then (x => {
+        state.usersPaginate = x.data;
+      })
+      .catch(err => {
+        alert(err.message)
+      })
+    },
+
+    setProductsPagination (state,value) {
+      axios.get('/api/admin/getProductsPagination?page=' + value).then (x => {
+        state.productsPaginate = x.data;
+      })
+      .catch(err => {
+        alert(err.message)
+      })
+    },
+
+    updateProductPagination (state,value) {
+      let obj = state.productsPaginate.data.find(x => x.id === value.id);
+      obj = value;
+    }
 
   },
 
@@ -173,7 +245,27 @@ export default new Vuex.Store({
 
     getShopCurrentPage : state => {
       return state.shopCurentPage;
-    }
+    },
     
+    getDisplaySidebar : state => {
+      return state.displaySidebar;
+    },
+
+    /**********************************
+    ******    Order    ****************
+    ***********************************/
+
+   getOrdersPagination : state => {
+      return state.ordersPaginate;
+    },
+
+    getUsersPagination : state => {
+      return state.usersPaginate;
+    },
+
+    getProductsPagination : state => {
+      return state.productsPaginate;
+    }
+
   }
 });

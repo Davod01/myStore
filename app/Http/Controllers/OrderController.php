@@ -15,7 +15,7 @@ class OrderController extends Controller
      */
     public function index()
     {
-        return response()->json(Order::with(['product'])->get(),200);
+        
     }
 
 
@@ -130,4 +130,5 @@ class OrderController extends Controller
                 'message' => $status ? 'Order Deleted!' : 'Error Deleting Order'
             ]);
     }
+
 }

@@ -1,12 +1,15 @@
 <template>
   <div id="app">
-    <router-view name="header"></router-view>
-    <main id="MainClass">
+    <router-view name="sidebar"></router-view>
+    <div id="app-child"  v-bind:class="{ 'sidebar-on': displaySidebar, 'sidebar-of': !displaySidebar }">
+      <router-view name="header"></router-view>
+      <main id="MainClass">
       <div class="container">
         <router-view></router-view>
       </div>
-    </main>
-    <router-view name="footer"></router-view>
+      </main>
+      <router-view name="footer"></router-view>
+    </div>
   </div>
 </template>
 <script>
@@ -18,6 +21,11 @@
     created () {
       if (this.$cookies.isKey('cart')) {
         this.$store.commit('set_orderList',Vue.$cookies.get('cart'));
+      }
+    },
+    computed:{
+      displaySidebar () {
+        return this.$store.getters.getDisplaySidebar;
       }
     }
   }
@@ -31,6 +39,7 @@
   box-sizing: border-box;
 }
 
+
 body {
   width: 100%;
   font-size: 18px;
@@ -40,12 +49,29 @@ body {
 #app {
   display: flex;
   width: 100%;
+  flex-direction: row;
+  /* height: 100vh; */
+}
+
+#app-child {
+  display: flex;
   flex-direction: column;
-  height: 100vh;
+  transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+  /* height: 100vh; */
+}
+
+.sidebar-on{
+  width: 85%;
+  margin-right: 15%;
+}
+
+.sidebar-of{
+  width: 100%;
 }
 
 #MainClass {
   flex-grow: 1;
+  margin: 0 0.5rem;
 }
 
 a {
@@ -76,7 +102,29 @@ ul{
   height: 1.2rem;
 }
 
+.icon-size-3{
+  width: 1.8rem;
+  height: 1.8rem;
+}
 
+.icon-size-4{
+  width: 2.2rem;
+  height: 2.2rem;
+}
+
+.icon-size-5{
+  width: 3rem;
+  height: 3rem;
+}
+
+.container {
+  margin: 0 1.5rem;
+}
+
+
+.rounded {
+  border-radius: 50%;
+}
 
 @media screen and (max-width: 798px) and (min-width: 498px) {
   .container {
@@ -104,6 +152,7 @@ ul{
 /*
 my definition
 */
+
 .color-red{
   color: red;
 }
@@ -114,6 +163,23 @@ my definition
 
 .display-inline-block {
   display: inline-block;
+}
+
+.mHover-red:hover {
+  filter: invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) ;
+ 
+}
+
+.mHover-yellow:hover {
+  filter: invert(96%) sepia(15%) saturate(4759%) hue-rotate(321deg) brightness(110%) contrast(88%);
+}
+
+.one-pading-x {
+  padding: 1rem;
+}
+
+.half-margin-x {
+  margin: 0.3rem;
 }
 
 
@@ -206,5 +272,16 @@ my definition
   }
 }
 
+.slide-fade-enter-active {
+  transition: all .3s ease;
+}
+.slide-fade-leave-active {
+  transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+}
+.slide-fade-enter, .slide-fade-leave-to
+/* .slide-fade-leave-active below version 2.1.8 */ {
+  transform: translateX(10px);
+  opacity: 0;
+}
 
 </style>

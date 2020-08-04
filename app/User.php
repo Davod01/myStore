@@ -7,13 +7,13 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use Shetabit\Visitor\Traits\Visitor;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use Notifiable,SoftDeletes;
+    use Notifiable,SoftDeletes,Visitor;
 
     protected $keyType = 'integer';
-    
     /**
      * The attributes that are mass assignable.
      *

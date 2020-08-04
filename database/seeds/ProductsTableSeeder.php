@@ -23,7 +23,7 @@ class ProductsTableSeeder extends Seeder
                 'category' => $cat[rand(0,2)],
                 'size' => $size[rand(0,2)],
                 'price' => rand(20,800) * 1000,
-                'image' => 'images/p'. rand(1,4),
+                'image' => 'images/p'. rand(1,4) . '.jpg',
                 'created_at' => new DateTime,
                 'updated_at' => null,
             ];

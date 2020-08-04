@@ -28,9 +28,6 @@ class userController extends Controller
         return response()->json(['error' => 'login_error'], 401);
     }
 
-
-
-
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [

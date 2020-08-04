@@ -14,25 +14,69 @@ use Illuminate\Http\Request;
 */
 
 
-Route::get('/shop', 'homeController@shop');
 
-Route::get('/shop/{product}', 'homeController@getProduct');
-
-Route::post('/auth/login', 'userController@login');
-
-Route::post('/auth/register', 'userController@register');
 
 Route::get('/auth/refresh', 'userController@refresh');
 
 
-Route::middleware('auth:api')->group(function () {
+Route::group([
 
-    Route::post('/user/ordered', 'OrderController@store');
+    'middleware' => 'visit',
+
+    ],
+    function () {
+        Route::get('/shop', 'homeController@shop');
+
+        Route::get('/shop/{product}', 'homeController@getProduct');
+
+        Route::post('/auth/login', 'userController@login');
+
+        Route::post('/auth/register', 'userController@register');
+    });
+
+// Users route Group
+
+Route::group([
+
+    'middleware' => ['api','visit'],
+
+    ],
+    function () {
+        Route::post('/user/ordered', 'OrderController@store');
+
+        // Logout user from application
+        Route::post('/auth/logout', 'userController@logout');
+    });
+
+
+// Admin route Group
+
+Route::group([
+
+    'middleware' => 'api',
+
+    ],
+    function () {
+
+    // admin rutes
+    Route::get('/admin/getStatics', 'adminController@getStatics');
 
     // Get user info
     Route::get('/auth/user', 'userController@user');
-    // Logout user from application
-    Route::post('/auth/logout', 'userController@logout');
+
+    Route::get('/admin/getOrderDataChart', 'adminController@getOrderDataChart');
+
+    Route::get('/admin/getOrdersPagination', 'adminController@getOrders');
+
+    Route::get('/admin/getUsersPagination', 'adminController@getUsers');
+
+    Route::get('/admin/getProductsPagination', 'adminController@getProducts');
+
+    Route::post('/admin/deleteProduct', 'adminController@destroyProduct');
+
+    Route::post('/admin/product/add', 'adminController@addProduct');
+
+    Route::post('/admin/product/update', 'adminController@updateProduct');
 
 
 });

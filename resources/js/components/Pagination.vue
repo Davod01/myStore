@@ -1,8 +1,8 @@
 <template>
   <ul class="pagination-ul">
-    <li class="pagination-prev" @click="prevPage" v-if="showPrev">قبلی</li>
-    <li v-for="page in Pages" v-bind:key="page.name" @click="goPage(page.name)" :class="page.isDisabled">{{ page.name }}</li>
-    <li class="pagination-next" @click="nextPage" v-if="showNext">بعدی</li>
+    <li class="pagination-prev" @click.prevent="prevPage" v-if="showPrev">قبلی</li>
+    <li v-for="page in Pages" v-bind:key="page.name" @click.prevent="goPage(page.name)" :class="page.isDisabled">{{ page.name }}</li>
+    <li class="pagination-next" @click.prevent="nextPage" v-if="showNext">بعدی</li>
   </ul>
 </template>
 
@@ -19,9 +19,9 @@ export default {
   computed: {
     Pages () {
       var range = [];
-      if (this.$store.getters.getShopCurrentPage> 1) {
+      if (this.$store.getters.getShopCurrentPage > 1) {
         range.push({
-          name: this.$store.getters.getShopCurrentPage - 1,
+          name: 1,
           isDisabled: 'enable-paginate-page'
         });
       }
@@ -63,8 +63,7 @@ export default {
   }
 };
 </script>
-
-<style>
+<style scoped>
 .pagination-ul {
   display: flex;
   flex-direction: row;

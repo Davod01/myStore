@@ -39,7 +39,7 @@ export default {
       this.Product = x.data;
     })
     .catch (err => {
-      this.Product = err.message;
+      alert(err.message);
     });
   }
 }

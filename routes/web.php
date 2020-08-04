@@ -14,8 +14,20 @@
 //     return view('welcome');
 // });
 
+Route::group([
 
-Route::get('/{any}', function(){
-    return view('landing');
-})->where('any', '^(?!api\/)[\/\w\.-]*');
+    'middleware' => 'visit',
 
+    ],
+    function () {
+        Route::get('/', function(){
+            return view('landing');
+        });
+        
+        
+    }
+);
+
+    Route::get('/{any}', function(){
+        return view('landing');
+    })->where('any', '^(?!api\/)[\/\w\.-]*');
